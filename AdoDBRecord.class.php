@@ -2,6 +2,7 @@
 	# AdoDBRecord -- an ActiveRecord look-alike in PHP using AdoDB
 	#
 	# Author: Kai Krakow <kai@kaishome.de>
+	# http://github.com/kakra/adodbrecord/
 	# Version 0.1
 	#
 	# Disclaimer: By using this software you agree to the terms of GPL2:
