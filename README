@@ -3,7 +3,7 @@ AdoDBRecord -- an ActiveRecord look-alike in PHP using AdoDB
 
 Author: Kai Krakow <kai@kaishome.de>
 
-Disclaimer: By using this software you agree to the terms of GPL2:
+Disclaimer: By using this software you agree to the terms of GPLv2:
 http://www.gnu.org/licenses/gpl-2.0.html
 
 Homepage:
@@ -21,7 +21,7 @@ felt the need for a similar solution in PHP. Googling around I found some
 people saying this is impossible. That’s true: Ruby’s OOP implementation
 is in many ways superior to PHP’s.
 
-But anyway I decided: Some of ActiveRecords comfort must be possible in
+But anyway I decided: Some of ActiveRecord's comfort must be possible in
 PHP. I’ve decided to build on AdoDB for PHP since it already does the
 heavy lifting of database abstraction very good.
 
@@ -32,3 +32,13 @@ at GitHub and would be very interested on your feedback.
 This project grew out of the need to ease up database development in an
 already existing legacy application. It’s not meant as an exact
 ActiveRecord replacement in PHP – just similar in convenience.
+
+
+Installation
+============
+
+Copy to your php includes location. Best choice may be where your
+adodb.inc.php resides. Adjust the database settings in the class file
+or create an own file which contains these settings and include the
+class file from there instead. I know, this is currently not so well
+done.

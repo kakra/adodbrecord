@@ -5,7 +5,7 @@
 	# http://github.com/kakra/adodbrecord/
 	# Version 0.1
 	#
-	# Disclaimer: By using this software you agree to the terms of GPL2:
+	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
 	#
 	# You need the following software to run AdoDBRecord:
@@ -49,7 +49,7 @@
 			return sprintf("`id` = %d" ,$this->_attributes["id"]);
 		}
 
-		# returns an assoziative array
+		# returns an associative array
 		# FIXME should probably better return instances of _class_name()
 		function find_all($options = false) {
 			$conn = _adodb_conn();
@@ -75,8 +75,8 @@
 		}
 
 		# saves the record by update or insert depending on _new_record
-		# this automagically adds updated_at and created_at which are send
-		# to the db only if the columns exist (AdoDB automagic in AutoExecute())
+		# this automagically adds updated_at and created_at which are sent
+		# to the db only if the columns exist (AdoDB's automagic in AutoExecute())
 		# _new_record gets cleared on successful save
 		function save() {
 			$conn = _adodb_conn();
