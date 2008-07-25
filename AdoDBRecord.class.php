@@ -3,7 +3,7 @@
 	#
 	# Author: Kai Krakow <kai@kaishome.de>
 	# http://github.com/kakra/adodbrecord/
-	# Version 0.1
+	# Version 0.2
 	#
 	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
@@ -41,6 +41,19 @@
 		# initializer
 		function AdoDBRecord($attributes = false) {
 			if ($attributes) $this->_attributes = $attributes;
+		}
+
+		# instanciate and save a new object
+		function create($attributes = false) {
+			$class = _class_name();
+			$obj = new $class(&$attributes);
+			$obj->save();
+			return $obj;
+		}
+
+		# get the class name of the instance or static invocation
+		function _class() {
+			return _class_name();
 		}
 
 		# return the id of this record as where-clause or false if new
@@ -81,17 +94,42 @@
 		function save() {
 			$conn = _adodb_conn();
 			$this->_attributes["updated_at"] = mktime();
-			if ($this->_new_record)
-			{
+			if ($this->_new_record) {
 				$this->_attributes["created_at"] = mktime();
-				if ($res = $conn->AutoExecute(_class_name(), $this->_attributes, 'INSERT'))
-				{
+				if ($res = $conn->AutoExecute(_class_name(), $this->_attributes, 'INSERT')) {
 					$this->_attributes["id"] = $conn->Insert_ID();
 					$this->_new_record = false;
 				}
 				return $res;
 			}
 			return $conn->AutoExecute(_class_name(), $this->_attributes, 'UPDATE', $this->_id());
+		}
+
+		# delete the instance from the database, sets _new_record to false to indicate it's no longer
+		# stored in the database
+		function delete() {
+			$conn = _adodb_conn();
+			$class = _class_name();
+			if ($this->_new_record) return false;
+			if ($res = $conn->Execute("DELETE FROM `" . _class_name() . "` WHERE " . $this->_id()))
+				$this->_new_record = true;
+			return $res;
+		}
+
+		# destroy one or more id's by finding each id and running destroy() on it
+		# if called on an instance it runs delete() on it
+		function _destroy($id) {
+			$class = _class_name();
+			if (is_array($id)) {
+				foreach ($id as $one_id) eval(sprintf("$class::destroy(%d);", $one_id));
+				return;
+			}
+			if (isset($this))
+				return $this->delete();
+			else {
+				eval(sprintf("\$obj = $class::find(%d);", $id));
+				return $obj->destroy();
+			}
 		}
 	}
 ?>
