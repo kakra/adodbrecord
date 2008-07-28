@@ -3,7 +3,7 @@
 	#
 	# Author: Kai Krakow <kai@kaishome.de>
 	# http://github.com/kakra/adodbrecord/
-	# Version 0.3
+	# Version 0.3.1
 	#
 	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
@@ -118,7 +118,7 @@
 
 		# destroy one or more id's by finding each id and running destroy() on it
 		# if called on an instance it runs delete() on it
-		function _destroy($id) {
+		function destroy($id) {
 			$class = _class_name();
 			if (is_array($id)) {
 				foreach ($id as $one_id) eval(sprintf("$class::destroy(%d);", $one_id));
