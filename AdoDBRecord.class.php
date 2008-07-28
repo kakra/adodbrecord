@@ -3,7 +3,7 @@
 	#
 	# Author: Kai Krakow <kai@kaishome.de>
 	# http://github.com/kakra/adodbrecord/
-	# Version 0.2
+	# Version 0.3
 	#
 	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
@@ -73,7 +73,7 @@
 
 		# returns the one record found by $id
 		# as an instance of _class_name()
-		function find($id) {
+		function &find($id) {
 			$conn = _adodb_conn();
 			$class = _class_name();
 			$obj = new $class($conn->GetRow("SELECT * FROM `" . _class_name() . "` WHERE `id` = ?", array($id)));
@@ -130,6 +130,13 @@
 				eval(sprintf("\$obj = $class::find(%d);", $id));
 				return $obj->destroy();
 			}
+		}
+
+		# updates the attributes by merging the new array with the existing
+		# attributes and saves the object
+		function update_attributes($attributes) {
+			$this->_attributes = array_merge($this->_attributes, $attributes);
+			return $this->save();
 		}
 	}
 ?>
