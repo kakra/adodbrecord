@@ -11,7 +11,20 @@
 	# You need the following software to run AdoDBRecord:
 	# http://phplens.com/adodb/index.html
 
-	require_once("adodb.inc.php"); # min. v4.56
+	global
+		$PREFIX_ADODB, # set your adodb.inc.php include prefix if needed
+		$ADODB_vers;
+	require_once("${PREFIX_ADODB}adodb.inc.php");
+
+	# AdoDB version min. v4.56 is needed
+	function _adodb_version_check()
+	{
+		global $ADODB_vers;
+		sscanf($ADODB_vers, "V%d.%d %s", $v_major, $v_minor, $dummy);
+		if ($v_major > 4) return;
+		if (($v_major == 4) && ($v_minor >= "56")) return;
+		die("AdoDBRecord: Your AdoDB version is too old. Requiring at least v4.56.");
+	}
 
 	# FIXME initiate your connection here
 #	$_adodb_conn = &ADONewConnection($database[type]);
@@ -33,6 +46,8 @@
 		global $_adodb_conn;
 		return $_adodb_conn;
 	}
+
+	_adodb_version_check();
 
 	class AdoDBRecord {
 		var $_attributes = array (); # holds the attributes
@@ -76,9 +91,12 @@
 		function &find($id) {
 			$conn = _adodb_conn();
 			$class = _class_name();
-			$obj = new $class($conn->GetRow("SELECT * FROM `" . _class_name() . "` WHERE `id` = ?", array($id)));
-			$obj->_new_record = false;
-			return $obj;
+			if ($row = $conn->GetRow("SELECT * FROM `" . _class_name() . "` WHERE `id` = ?", array($id))) {
+				$obj = new $class($row);
+				$obj->_new_record = false;
+				return $obj;
+			}
+			return NULL;
 		}
 
 		# returns the last error message of the db connection
