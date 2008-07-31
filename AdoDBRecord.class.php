@@ -26,6 +26,12 @@
 		die("AdoDBRecord: Your AdoDB version is too old. Requiring at least v4.56.");
 	}
 
+	# AdoDBRecord initialization functions
+	function _adodb_record_init() {
+		global $_adodb_column_cache;
+		$_adodb_column_cache = array();
+	}
+
 	# FIXME initiate your connection here
 #	$_adodb_conn = &ADONewConnection($database[type]);
 #	$_adodb_conn->Connect($database[host],$database[user],$database[password],$database[db_name]);
@@ -48,14 +54,56 @@
 	}
 
 	_adodb_version_check();
+	_adodb_record_init();
 
 	class AdoDBRecord {
 		var $_attributes = array (); # holds the attributes
 		var $_new_record = true; # if this is a new record
+		var $_table_name = false;
 
 		# initializer
 		function AdoDBRecord($attributes = false) {
+			global $_adodb_column_cache;
+			$conn = _adodb_conn();
+			# FIXME do inflections
+			if (!$this->_table_name) $this->_table_name = _class_name();
+			if ($_adodb_column_cache[$this->_table_name])
+			$this->_columns = $conn->GetCol(sprintf("SHOW COLUMNS FROM `%s`", $this->_table_name()));
+			# define setter/getter methods
+			foreach ($this->_columns as $col) $this->attribute_accessor($col, true);
 			if ($attributes) $this->_attributes = $attributes;
+		}
+
+		# creates an attribute accessor
+		function attribute_accessor($attribute, $db_only = false) {
+			if (!$this->$col)
+				$this->$col = create_function('$value = false', <<<EOF
+					# FIXME instead count arguments
+					if (\$value === false) return \$this->_get_attribute("$col", $db_only);
+					return \$this->_set_attribute("$col", \$value, $db_only);
+EOF
+				);
+		}
+
+		# logs an error
+		# FIXME to be moved to seperate class
+		function log_error($message, $priority = E_USER_NOTICE, $fatal = false) {
+			trigger_error($message, $priority);
+			if ($fatal) die($message);
+		}
+
+		# private attribute getter
+		# returns the current value
+		function _get_attribute($attribute, $db_only = true) {
+			if (!$db_only || in_array($attribute, $this->_columns)) return $this->_attributes[$attribute];
+			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
+		}
+
+		# private attribute setter
+		# returns the new value
+		function _set_attribute($attribute, $value, $db_only = true) {
+			if (!$db_only || in_array($attribute, $this->_columns)) return $this->_attributes[$attributes] = $value;
+			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
 		}
 
 		# instanciate and save a new object
@@ -79,6 +127,7 @@
 
 		# returns an associative array
 		# FIXME should probably better return instances of _class_name()
+		# FIXME support to manually set table name
 		function find_all($options = false) {
 			$conn = _adodb_conn();
 			$append_sql = "";
@@ -88,6 +137,7 @@
 
 		# returns the one record found by $id
 		# as an instance of _class_name()
+		# FIXME support to manually set table name
 		function &find($id) {
 			$conn = _adodb_conn();
 			$class = _class_name();
@@ -114,22 +164,21 @@
 			$this->_attributes["updated_at"] = mktime();
 			if ($this->_new_record) {
 				$this->_attributes["created_at"] = mktime();
-				if ($res = $conn->AutoExecute(_class_name(), $this->_attributes, 'INSERT')) {
+				if ($res = $conn->AutoExecute($this->_table_name, $this->_attributes, 'INSERT')) {
 					$this->_attributes["id"] = $conn->Insert_ID();
 					$this->_new_record = false;
 				}
 				return $res;
 			}
-			return $conn->AutoExecute(_class_name(), $this->_attributes, 'UPDATE', $this->_id());
+			return $conn->AutoExecute($this->_table_name, $this->_attributes, 'UPDATE', $this->_id());
 		}
 
 		# delete the instance from the database, sets _new_record to false to indicate it's no longer
 		# stored in the database
 		function delete() {
 			$conn = _adodb_conn();
-			$class = _class_name();
 			if ($this->_new_record) return false;
-			if ($res = $conn->Execute("DELETE FROM `" . _class_name() . "` WHERE " . $this->_id()))
+			if ($res = $conn->Execute(sprintf("DELETE FROM `%s` WHERE %s", $this->_table_name, $this->_id())))
 				$this->_new_record = true;
 			return $res;
 		}
