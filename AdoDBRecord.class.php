@@ -14,7 +14,9 @@
 	global
 		$PREFIX_ADODB, # set your adodb.inc.php include prefix if needed
 		$ADODB_vers;
+
 	require_once("${PREFIX_ADODB}adodb.inc.php");
+	require_once("AdoDBRecord_Base.class.php");
 
 	# AdoDB version min. v4.56 is needed
 	function _adodb_version_check()
@@ -56,7 +58,7 @@
 	_adodb_version_check();
 	_adodb_record_init();
 
-	class AdoDBRecord {
+	class AdoDBRecord extends AdoDBRecord_Base {
 		var $_attributes = array (); # holds the attributes
 		var $_new_record = true; # if this is a new record
 		var $_table_name = false;
