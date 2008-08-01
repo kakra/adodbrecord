@@ -67,24 +67,14 @@
 		function AdoDBRecord($attributes = false) {
 			global $_adodb_column_cache;
 			$conn = _adodb_conn();
+
+			# TODO move code to seperate base class
 			# FIXME do inflections
 			if (!$this->_table_name) $this->_table_name = _class_name();
 			if ($_adodb_column_cache[$this->_table_name])
 			$this->_columns = $conn->GetCol(sprintf("SHOW COLUMNS FROM `%s`", $this->_table_name()));
-			# define setter/getter methods
-			foreach ($this->_columns as $col) $this->attribute_accessor($col, true);
-			if ($attributes) $this->_attributes = $attributes;
-		}
 
-		# creates an attribute accessor
-		function attribute_accessor($attribute, $db_only = false) {
-			if (!$this->$col)
-				$this->$col = create_function('$value = false', <<<EOF
-					# FIXME instead count arguments
-					if (\$value === false) return \$this->_get_attribute("$col", $db_only);
-					return \$this->_set_attribute("$col", \$value, $db_only);
-EOF
-				);
+			if ($attributes) $this->_attributes = $attributes;
 		}
 
 		# logs an error
