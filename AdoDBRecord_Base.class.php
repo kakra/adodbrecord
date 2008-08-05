@@ -17,7 +17,15 @@
 
 	class AdoDBRecord_Base {
 
-		function _setup() {}
+		function AdoDBRecord_Base() {
+			# call the setup hook
+			$this->_setup();
+		}
+
+		# standard setup hook does nothing
+		# can be implemented in derived classes
+		function _setup() {
+		}
 
 		# register the hook which defines a derived class
 		function register_hooks() {

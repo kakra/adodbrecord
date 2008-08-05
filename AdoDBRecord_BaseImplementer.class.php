@@ -14,22 +14,27 @@
 	# attribute accessors.
 
 	require_once("AdoDBRecord_Implementer.class.php");
-	
+
 	class AdoDBRecord_BaseImplementer extends AdoDBRecord_Implementer {
 		function create_stream($class_name) {
+			# extract the class name from the stream name first
+			preg_match("#([a-z0-9_]*)(\.(.*))?#i",$class_name, $parts) or die("Invalid class name '$class_name'");
+			$class = $parts[1];
+
+			# build class
 			return <<<EOC
-				class $class_name extends AdoDBRecord {
+				class $class extends AdoDBRecord {
 				}
 EOC;
 		}
 
 		function write_attr_accessors($attribute) {
-			return <<<EOF
+			return <<<EOA
 				function $attribute(\$value = false) {
 					if (\$value) return \$this->_attributes["$attribute"] = \$value;
 					return \$this->_attributes["$attribute"];
 				}
-EOF;
+EOA;
 		}
 	}
 ?>

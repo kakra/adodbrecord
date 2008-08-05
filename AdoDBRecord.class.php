@@ -17,6 +17,7 @@
 
 	require_once("${PREFIX_ADODB}adodb.inc.php");
 	require_once("AdoDBRecord_Base.class.php");
+	require_once("Inflector.class.php");
 
 	# AdoDB version min. v4.56 is needed
 	function _adodb_version_check()
@@ -32,6 +33,7 @@
 	function _adodb_record_init() {
 		global $_adodb_column_cache;
 		$_adodb_column_cache = array();
+		AdoDBRecord_Base::register_hooks();
 	}
 
 	# FIXME initiate your connection here
@@ -68,9 +70,10 @@
 			global $_adodb_column_cache;
 			$conn = _adodb_conn();
 
+			parent::AdoDBRecord_Base();
+
 			# TODO move code to seperate base class
-			# FIXME do inflections
-			if (!$this->_table_name) $this->_table_name = _class_name();
+			if (!$this->_table_name) $this->_table_name = Inflector::pluralize(_class_name());
 			if ($_adodb_column_cache[$this->_table_name])
 			$this->_columns = $conn->GetCol(sprintf("SHOW COLUMNS FROM `%s`", $this->_table_name()));
 
