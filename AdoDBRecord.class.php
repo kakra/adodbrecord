@@ -43,9 +43,13 @@
 
 	# Return class name derived from backtrace because php isn't able
 	# to return the correct one (read: the one we need) in static call implementations
-	function _class_name() {
+	function _class_name($skip = 0) {
 		$backtrace = debug_backtrace();
 		while ($a = next($backtrace)) { // first always ignored
+			if ($skip > 0) {
+				$skip--;
+				continue;
+			}
 			if (!empty($a["class"])) return $a["class"];
 		}
 		return NULL;

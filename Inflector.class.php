@@ -12,96 +12,91 @@
 	#
 	# This class is used to inflect strings.
 
-	class Inflections {
-		var $irregulars = array();
-		var $plurals = array();
-		var $singulars = array();
-		var $uncountables = array();
-
-		function instance() {
-			global $Inflections;
-			if (defined($this)) return $this;
-			if (!$Inflections) $Inflections = new Inflections();
-			return $Inflections;
-		}
-
-		function irregular($singular, $plural) {
-			if (strtoupper(substr($singular, 0, 1)) == strtoupper(substr($plural, 0, 1))) {
-				Inflections::instance #here#
-			}
-			array_unshift(Inflections::instance()->irregulars,
-		}
-	}
+	require_once("Inflections.module.php");
 
 	class Inflector {
 
+		function &inflections() {
+			return Module::instance("Inflections");
+		}
+
 		# pluralizes a string
 		function pluralize($string) {
-			if (in_array(strtolower($string), Inflections::instance()->uncountables)) return $string;
-			foreach (Inflections::instance()->plurals as $rule => $replacement) {
-				if ($result = preg_replace($rule, $replacement, $string)) if ($result != $string) break;
+			if (in_array(strtolower($string), Inflector::inflections()->uncountables)) return $string;
+			foreach (Inflector::inflections()->plurals as $plural) {
+				list($rule, $replacement) = $plural;
+				$result = preg_replace($rule, $replacement, $string, 1, $count);
+				 if ($count) break;
 			}
-			if (!$result) $result = $string;
+			if (!isset($result)) $result = $string;
+			return $result;
+		}
+
+		# singularizes a string
+		function singularize($string) {
+			if (in_array(strtolower($string), Inflector::inflections()->uncountables)) return $string;
+			foreach (Inflector::inflections()->singulars as $singular) {
+				list($rule, $replacement) = $singular;
+				$result = preg_replace($rule, $replacement, $string, 1, $count);
+				 if ($count) break;
+			}
+			if (!isset($result)) $result = $string;
 			return $result;
 		}
 	}
 
-	Inflections::irregular("person", "people");
-	Inflections::irregular("man", "men");
-	Inflections::irregular("child", "children");
-	Inflections::irregular("sex", "sexes");
-	Inflections::irregular("move", "moves");
-	Inflections::irregular("cow", "kine");
+	$inflect = Inflector::inflections();
 
+	$inflect->plural('/$/', 's');
+	$inflect->plural('/s$/i', 's');
+	$inflect->plural('/(ax|test)is$/i', '\1es');
+	$inflect->plural('/(octop|vir)us$/i', '\1i');
+	$inflect->plural('/(alias|status)$/i', '\1es');
+	$inflect->plural('/(bu)s$/i', '\1ses');
+	$inflect->plural('/(buffal|tomat)o$/i', '\1oes');
+	$inflect->plural('/([ti])um$/i', '\1a');
+	$inflect->plural('/sis$/i', 'ses');
+	$inflect->plural('/(?:([^f])fe|([lr])f)$/i', '\1\2ves');
+	$inflect->plural('/(hive)$/i', '\1s');
+	$inflect->plural('/([^aeiouy]|qu)y$/i', '\1ies');
+	$inflect->plural('/(x|ch|ss|sh)$/i', '\1es');
+	$inflect->plural('/(matr|vert|ind)(?:ix|ex)$/i', '\1ices');
+	$inflect->plural('/([m|l])ouse$/i', '\1ice');
+	$inflect->plural('/^(ox)$/i', '\1en');
+	$inflect->plural('/(quiz)$/i', '\1zes');
 
-		var $plurals = array(
-			'/$/' => 's',
-			'/s$/i' => 's',
-			'(ax|test)is$/i' => '\1es',
-			'/(octop|vir)us$/i' => '\1i',
-			'/(alias|status)$/i' => '\1es',
-			'(bu)s$/i' => '\1ses',
-			'(buffal|tomat)o$/i' => '\1oes',
-			'([ti])um$/i' => '\1a',
-			'/sis$/i' => 'ses',
-			'/(?:([^f])fe|([lr])f)$/i' => '\1\2ves',
-			'/(hive)$/i' => '\1s',
-			'/([^aeiouy]|qu)y$/i' => '\1ies',
-			'/(x|ch|ss|sh)$/i' => '\1es',
-			'/(matr|vert|ind)(?:ix|ex)$/i' => '\1ices',
-			'/([m|l])ouse$/i' => '\1ice',
-			'/^(ox)$/i' => '\1en',
-			'/(quiz)$/i' => '\1zes'
-		);
+	$inflect->singular('/s$/i', '');
+	$inflect->singular('/(n)ews$/i', '\1ews');
+	$inflect->singular('/([ti])a$/i', '\1um');
+	$inflect->singular('/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$/i', '\1\2sis');
+	$inflect->singular('/(^analy)ses$/i', '\1sis');
+	$inflect->singular('/([^f])ves$/i', '\1fe');
+	$inflect->singular('/(hive)s$/i', '\1');
+	$inflect->singular('/(tive)s$/i', '\1');
+	$inflect->singular('/([lr])ves$/i', '\1f');
+	$inflect->singular('/([^aeiouy]|qu)ies$/i', '\1y');
+	$inflect->singular('/(s)eries$/i', '\1eries');
+	$inflect->singular('/(m)ovies$/i', '\1ovie');
+	$inflect->singular('/(x|ch|ss|sh)es$/i', '\1');
+	$inflect->singular('/([m|l])ice$/i', '\1ouse');
+	$inflect->singular('/(bus)es$/i', '\1');
+	$inflect->singular('/(o)es$/i', '\1');
+	$inflect->singular('/(shoe)s$/i', '\1');
+	$inflect->singular('/(cris|ax|test)es$/i', '\1is');
+	$inflect->singular('/(octop|vir)i$/i', '\1us');
+	$inflect->singular('/(alias|status)es$/i', '\1');
+	$inflect->singular('/^(ox)en/i', '\1');
+	$inflect->singular('/(vert|ind)ices$/i', '\1ex');
+	$inflect->singular('/(matr)ices$/i', '\1ix');
+	$inflect->singular('/(quiz)zes$/i', '\1');
 
-		var $singulars = array(
-			'/s$/i' => '',
-			'/(n)ews$/i' => '\1ews',
-			'/([ti])a$/i' => '\1um',
-			'/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$/i' => '\1\2sis',
-			'/(^analy)ses$/i' => '\1sis',
-			'/([^f])ves$/i' => '\1fe',
-			'/(hive)s$/i' => '\1',
-			'/(tive)s$/i' => '\1',
-			'/([lr])ves$/i' => '\1f',
-			'/([^aeiouy]|qu)ies$/i' => '\1y',
-			'/(s)eries$/i' => '\1eries',
-			'/(m)ovies$/i' => '\1ovie',
-			'/(x|ch|ss|sh)es$/i' => '\1',
-			'/([m|l])ice$/i' => '\1ouse',
-			'/(bus)es$/i' => '\1',
-			'/(o)es$/i' => '\1',
-			'/(shoe)s$/i' => '\1',
-			'/(cris|ax|test)es$/i' => '\1is',
-			'/(octop|vir)i$/i' => '\1us',
-			'/(alias|status)es$/i' => '\1',
-			'/^(ox)en/i' => '\1',
-			'/(vert|ind)ices$/i' => '\1ex',
-			'/(matr)ices$/i' => '\1ix',
-			'/(quiz)zes$/i' => '\1'
-		);
+	$inflect->irregular("person", "people");
+	$inflect->irregular("man", "men");
+	$inflect->irregular("child", "children");
+	$inflect->irregular("sex", "sexes");
+	$inflect->irregular("move", "moves");
+	$inflect->irregular("cow", "kine");
 
-		var $uncountables = array("equipment", "information", "rice", "money", "species", "series", "fish", "sheep");
-		}
+	$inflect->uncountable(array("equipment", "information", "rice", "money", "species", "series", "fish", "sheep"));
 
 ?>
