@@ -10,7 +10,7 @@
 	#
 	# This class is used to access some module/mixin related functions.
 
-	require_once("AdoDBRecord.class.php");
+	require_once("AdoDBRecord_Tools.class.php");
 
 	class Module {
 		function &instance($class = false) {

@@ -10,59 +10,23 @@
 	#
 	# You need the following software to run AdoDBRecord:
 	# http://phplens.com/adodb/index.html
+	#
+	# Set global $PREFIX_ADODB to make AdoDBRecord find you adodb
+	# installation, e.g. $PREFIX_ADODB = "adodb/" -- beware the final
+	# slash "/" in the path name. This will look for "adodb/adodb.inc.php"
+	# in your include path.
 
-	global
-		$PREFIX_ADODB, # set your adodb.inc.php include prefix if needed
-		$ADODB_vers;
-
-	require_once("${PREFIX_ADODB}adodb.inc.php");
+	require_once("AdoDBRecord_Tools.class.php");
 	require_once("AdoDBRecord_Base.class.php");
 	require_once("Inflector.class.php");
-
-	# AdoDB version min. v4.56 is needed
-	function _adodb_version_check()
-	{
-		global $ADODB_vers;
-		sscanf($ADODB_vers, "V%d.%d %s", $v_major, $v_minor, $dummy);
-		if ($v_major > 4) return;
-		if (($v_major == 4) && ($v_minor >= "56")) return;
-		die("AdoDBRecord: Your AdoDB version is too old. Requiring at least v4.56.");
-	}
-
-	# AdoDBRecord initialization functions
-	function _adodb_record_init() {
-		global $_adodb_column_cache;
-		$_adodb_column_cache = array();
-		AdoDBRecord_Base::register_hooks();
-	}
 
 	# FIXME initiate your connection here
 #	$_adodb_conn = &ADONewConnection($database[type]);
 #	$_adodb_conn->Connect($database[host],$database[user],$database[password],$database[db_name]);
 #	$_adodb_conn->debug = true;
 
-	# Return class name derived from backtrace because php isn't able
-	# to return the correct one (read: the one we need) in static call implementations
-	function _class_name($skip = 0) {
-		$backtrace = debug_backtrace();
-		while ($a = next($backtrace)) { // first always ignored
-			if ($skip > 0) {
-				$skip--;
-				continue;
-			}
-			if (!empty($a["class"])) return $a["class"];
-		}
-		return NULL;
-	}
-
-	# Helper function to return a global database connection to AdoDB
-	function &_adodb_conn() {
-		global $_adodb_conn;
-		return $_adodb_conn;
-	}
-
-	_adodb_version_check();
-	_adodb_record_init();
+	AdoDBRecord_Tools::version_check();
+	AdoDBRecord_Tools::init();
 
 	class AdoDBRecord extends AdoDBRecord_Base {
 		var $_attributes = array (); # holds the attributes
@@ -71,7 +35,6 @@
 
 		# initializer
 		function AdoDBRecord($attributes = false) {
-			global $_adodb_column_cache;
 			$conn = _adodb_conn();
 
 			parent::AdoDBRecord_Base();
@@ -79,8 +42,7 @@
 			# TODO move code to seperate base class
 			if (!$this->_table_name) $this->_table_name = Inflector::pluralize(_class_name());
 			if ($_adodb_column_cache[$this->_table_name])
-			$this->_columns = $conn->GetCol(sprintf("SHOW COLUMNS FROM `%s`", $this->_table_name()));
-
+			$this->_columns = AdoDBRecord_Tools::get_columns($this->_table_name);
 			if ($attributes) $this->_attributes = $attributes;
 		}
 
