@@ -39,7 +39,7 @@ Installation
 
 Copy to your php includes location. Best choice may be where your
 adodb.inc.php resides, however you can configure that with the
-$ADODB_PREFIX variable. At least v4.54 of AdoDB is needed which
+$PREFIX_ADODB variable. At least v4.54 of AdoDB is needed which
 will be checked. Adjust the database settings in the class file
 or create an own file which contains these settings and include the
 class file from there instead. I know, this is currently not so well
