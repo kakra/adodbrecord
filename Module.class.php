@@ -14,12 +14,15 @@
 
 	class Module {
 		function &instance($class = false) {
-			if (isset($this)) return $this;
-			if (!$class) $class = _class_name(1);
+			if (!$class) {
+				if (isset($this)) return $this;
+				$class = _class_name(1);
+			}
 			$class = ucfirst(strtolower($class));
-			global $$class;
-			if (isset($$class)) return $$class;
-			return $$class = new $class();
+			$instance = "__{$class}";
+			global $$instance;
+			if (isset($$instance)) return $$instance;
+			return $$instance = new $class();
 		}
 	}
 ?>

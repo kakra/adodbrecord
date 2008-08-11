@@ -36,7 +36,7 @@
 		var $_column_cache = array();
 
 		function registration() {
-			return Module::instance("AdoDBRecord_Tools");
+			return Module::instance(__CLASS__);
 		}
 
 		# AdoDB version min. v4.56 is needed
@@ -49,9 +49,10 @@
 			die("AdoDBRecord: Your AdoDB version is too old. Requiring at least v4.56.");
 		}
 
-		function get_columns($table) {
+		function get_columns() {
 			$registration = AdoDBRecord_Tools::registration();
-			if (in_array($table, $registration->_column_cache))
+			$table = $this->_table_name;
+			if (array_key_exists($table, $registration->_column_cache))
 				return $registration->_column_cache[$table];
 			$conn = _adodb_conn();
 			return $registration->_column_cache[$table] = $conn->GetCol(sprintf("SHOW COLUMNS FROM `%s`", $table));

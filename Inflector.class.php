@@ -43,6 +43,19 @@
 			if (!isset($result)) $result = $string;
 			return $result;
 		}
+
+		# converts camel case to underscores
+		function underscore($string) {
+			$string = str_replace("::", "/", $string);
+			$string = preg_replace('/([A-Z]+)([A-Z][a-z])/', '\1_\2', $string);
+			$string = preg_replace('/([a-z\d])([A-Z])/', '\1_\2', $string);
+			return strtolower($string);
+		}
+
+		# converts class name to table name
+		function tableize($string) {
+			return Inflector::pluralize(Inflector::underscore($string));
+		}
 	}
 
 	$inflect = Inflector::inflections();

@@ -28,22 +28,25 @@
 	AdoDBRecord_Tools::version_check();
 	AdoDBRecord_Tools::init();
 
-	class AdoDBRecord extends AdoDBRecord_Base {
+	define("ADODBRECORD_STUB", "ADODBRECORD_STUB");
+
+	class AdoDBRecord {
 		var $_attributes = array (); # holds the attributes
 		var $_new_record = true; # if this is a new record
-		var $_table_name = false;
+		var $_table_name = false; # set this to overwrite default
+
+		var $_type_name = NULL; # reserved for STI usage
+		var $_base_name = NULL; # reserved for STI usage
 
 		# initializer
 		function AdoDBRecord($attributes = false) {
-			$conn = _adodb_conn();
+			AdoDBRecord_Base::AdoDBRecord_Base();
+			if ($attributes && $attributes != ADODBRECORD_STUB) $this->_attributes = $attributes;
+		}
 
-			parent::AdoDBRecord_Base();
-
-			# TODO move code to seperate base class
-			if (!$this->_table_name) $this->_table_name = Inflector::pluralize(_class_name());
-			if ($_adodb_column_cache[$this->_table_name])
-			$this->_columns = AdoDBRecord_Tools::get_columns($this->_table_name);
-			if ($attributes) $this->_attributes = $attributes;
+		# standard setup hook does nothing
+		# can be implemented in derived classes
+		function setup() {
 		}
 
 		# logs an error
@@ -75,39 +78,10 @@
 			return $obj;
 		}
 
-		# get the class name of the instance or static invocation
-		function _class() {
-			return _class_name();
-		}
-
 		# return the id of this record as where-clause or false if new
 		function _id() {
 			if ($this->_new_record) return false;
 			return sprintf("`id` = %d" ,$this->_attributes["id"]);
-		}
-
-		# returns an associative array
-		# FIXME should probably better return instances of _class_name()
-		# FIXME support to manually set table name
-		function find_all($options = false) {
-			$conn = _adodb_conn();
-			$append_sql = "";
-			if ($options) $append_sql = " ${options}";
-			return $conn->GetAll("SELECT * FROM `" . _class_name() . "`${append_sql}");
-		}
-
-		# returns the one record found by $id
-		# as an instance of _class_name()
-		# FIXME support to manually set table name
-		function &find($id) {
-			$conn = _adodb_conn();
-			$class = _class_name();
-			if ($row = $conn->GetRow("SELECT * FROM `" . _class_name() . "` WHERE `id` = ?", array($id))) {
-				$obj = new $class($row);
-				$obj->_new_record = false;
-				return $obj;
-			}
-			return NULL;
 		}
 
 		# returns the last error message of the db connection
@@ -122,6 +96,7 @@
 		# _new_record gets cleared on successful save
 		function save() {
 			$conn = _adodb_conn();
+			$this->_attributes["type"] = ($this->_type_name == $this->_base_name ? "" : $this->_type_name);
 			$this->_attributes["updated_at"] = mktime();
 			if ($this->_new_record) {
 				$this->_attributes["created_at"] = mktime();
