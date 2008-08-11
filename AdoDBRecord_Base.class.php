@@ -27,7 +27,7 @@
 				$class = get_class($this);
 				while (get_parent_class($class) && !preg_match('/_Base$/i', get_parent_class($class)))
 					$class = get_parent_class($class);
-				$this->_base_name = $class;
+				$this->_base_class = $class;
 				$this->_table_name = Inflector::tableize($class);
 			}
 			$this->_type_name = get_class($this);

@@ -10,9 +10,9 @@
     <projectname>AdoDBRecord</projectname>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description></description>
+    <description/>
     <defaultencoding>utf8</defaultencoding>
-    <versioncontrol></versioncontrol>
+    <versioncontrol/>
   </general>
   <kdevscriptproject>
     <general>
@@ -46,11 +46,11 @@
     </webInvocation>
     <shell>
       <phpexe>/usr/bin/php</phpexe>
-      <phpini></phpini>
+      <phpini/>
     </shell>
     <options>
       <phpincludepath>/usr/share/php5;/usr/share/php</phpincludepath>
-      <defaultFile></defaultFile>
+      <defaultFile/>
       <startupFileMode>1</startupFileMode>
     </options>
   </kdevphpsupport>
@@ -106,7 +106,7 @@
     </useglobaltypes>
   </kdevfilecreate>
   <ctagspart>
-    <customArguments></customArguments>
+    <customArguments/>
     <customTagfilePath>/home/kakra/git/private/adodbrecord/tags</customTagfilePath>
     <activeTagsFiles/>
   </ctagspart>
@@ -115,13 +115,19 @@
       <group pattern="*.class.php" name="Klassendateien" />
       <group pattern="*.php" name="PHP-Scripte" />
       <group pattern="*.txt,README" name="Dokumentation" />
+      <hidenonprojectfiles>false</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
     </groups>
+    <tree>
+      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
+      <hidenonprojectfiles>false</hidenonprojectfiles>
+    </tree>
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
-      <docsystem></docsystem>
-      <docurl></docurl>
-      <usermanualurl></usermanualurl>
+      <docsystem/>
+      <docurl/>
+      <usermanualurl/>
     </projectdoc>
   </kdevdocumentation>
 </kdevelop>

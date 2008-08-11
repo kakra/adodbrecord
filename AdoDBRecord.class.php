@@ -36,7 +36,7 @@
 		var $_table_name = false; # set this to overwrite default
 
 		var $_type_name = NULL; # reserved for STI usage
-		var $_base_name = NULL; # reserved for STI usage
+		var $_base_class = NULL; # reserved for STI usage
 
 		# initializer
 		function AdoDBRecord($attributes = false) {
@@ -71,6 +71,7 @@
 		}
 
 		# instanciate and save a new object
+		# FIXME move to polymorphic class
 		function create($attributes = false) {
 			$class = _class_name();
 			$obj = new $class(&$attributes);
@@ -96,7 +97,7 @@
 		# _new_record gets cleared on successful save
 		function save() {
 			$conn = _adodb_conn();
-			$this->_attributes["type"] = ($this->_type_name == $this->_base_name ? "" : $this->_type_name);
+			$this->_attributes["type"] = ($this->_type_name == $this->_base_class ? "" : $this->_type_name);
 			$this->_attributes["updated_at"] = mktime();
 			if ($this->_new_record) {
 				$this->_attributes["created_at"] = mktime();
@@ -121,6 +122,7 @@
 
 		# destroy one or more id's by finding each id and running destroy() on it
 		# if called on an instance it runs delete() on it
+		# FIXME move to polymorphic class
 		function destroy($id) {
 			$class = _class_name();
 			if (is_array($id)) {
