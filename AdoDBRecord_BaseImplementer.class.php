@@ -35,6 +35,7 @@
 EOC;
 		}
 
+		# FIXME only instantiate once
 		function write_polymorphic_method($derived_class, $method) {
 			return <<<EOP
 				function __polymorphic_$method(\$params) { return AdoDBRecord_Base::$method(\$params); }
@@ -48,9 +49,9 @@ EOP;
 
 		function write_attr_accessor($attribute) {
 			return <<<EOA
-				function $attribute(\$value = false) {
-					if (\$value) return \$this->_attributes["$attribute"] = \$value;
-					return \$this->_attributes["$attribute"];
+				function $attribute() {
+					\$params = func_get_args();
+					return AdoDBRecord_Base::attribute(\$params);
 				}
 EOA;
 		}

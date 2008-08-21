@@ -95,5 +95,21 @@
 			}
 			return NULL;
 		}
+
+		# sets or reads an attribute depending on parameter count
+		# 1 parameter  => return named attribute
+        # 2 parameters => set and return named attribute
+		# 3 or more    => set and return named attribute as array
+		function attribute($params) {
+			$name = array_shift($params);
+			switch (count($params)) {
+				case 0:
+					return @$this->_attributes[$name];
+				case 1:
+					$params = array_shift($params);
+				default:
+					return $this->_attributes[$name] = $params;
+			}
+		}
 	}
 ?>
