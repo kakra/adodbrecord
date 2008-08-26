@@ -10,7 +10,8 @@ Homepage:
 http://github.com/kakra/adodbrecord/
 
 You need the following software to run AdoDBRecord:
-http://phplens.com/adodb/index.html
+http://phplens.com/adodb/ (essential)
+http://simpletest.org/ (unit testing)
 
 
 Read first
@@ -44,3 +45,10 @@ will be checked. Adjust the database settings in the class file
 or create an own file which contains these settings and include the
 class file from there instead. I know, this is currently not so well
 done.
+
+
+Directory Layout
+================
+
+examples ... Sample code, usage
+tests    ... Unit tests
