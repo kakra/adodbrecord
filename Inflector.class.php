@@ -22,8 +22,9 @@
 
 		# pluralizes a string
 		function pluralize($string) {
-			if (in_array(strtolower($string), Inflector::inflections()->uncountables)) return $string;
-			foreach (Inflector::inflections()->plurals as $plural) {
+			$inflections = Inflector::inflections();
+			if (in_array(strtolower($string), $inflections->uncountables)) return $string;
+			foreach ($inflections->plurals as $plural) {
 				list($rule, $replacement) = $plural;
 				$result = preg_replace($rule, $replacement, $string, 1, $count);
 				 if ($count) break;
@@ -34,8 +35,9 @@
 
 		# singularizes a string
 		function singularize($string) {
-			if (in_array(strtolower($string), Inflector::inflections()->uncountables)) return $string;
-			foreach (Inflector::inflections()->singulars as $singular) {
+			$inflections = Inflector::inflections();
+			if (in_array(strtolower($string), $inflections->uncountables)) return $string;
+			foreach ($inflections->singulars as $singular) {
 				list($rule, $replacement) = $singular;
 				$result = preg_replace($rule, $replacement, $string, 1, $count);
 				 if ($count) break;
