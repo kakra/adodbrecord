@@ -50,7 +50,7 @@
 		}
 	}
 
-	$inflect = Singleton::instance("Inflections");
+	$inflect =& Singleton::instance("Inflections");
 
 	$inflect->plural('/$/', 's');
 	$inflect->plural('/s$/i', 's');

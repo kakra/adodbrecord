@@ -35,7 +35,7 @@
 	class AdoDBRecord_Tools extends Singleton {
 		var $_column_cache = array();
 
-		function registration() {
+		function &registration() {
 			return Singleton::instance(__CLASS__);
 		}
 

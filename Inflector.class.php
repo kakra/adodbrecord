@@ -22,12 +22,15 @@
 
 		# pluralizes a string
 		function pluralize($string) {
-			$inflections = Inflector::inflections();
+			$inflections =& Inflector::inflections();
 			if (in_array(strtolower($string), $inflections->uncountables)) return $string;
 			foreach ($inflections->plurals as $plural) {
 				list($rule, $replacement) = $plural;
-				$result = preg_replace($rule, $replacement, $string, 1, $count);
-				 if ($count) break;
+				# This looks redundant but is needed for PHP4 compatibility
+				if (preg_match($rule, $string)) {
+					$result = preg_replace($rule, $replacement, $string, 1);
+					break;
+				}
 			}
 			if (!isset($result)) $result = $string;
 			return $result;
@@ -35,12 +38,15 @@
 
 		# singularizes a string
 		function singularize($string) {
-			$inflections = Inflector::inflections();
+			$inflections =& Inflector::inflections();
 			if (in_array(strtolower($string), $inflections->uncountables)) return $string;
 			foreach ($inflections->singulars as $singular) {
 				list($rule, $replacement) = $singular;
-				$result = preg_replace($rule, $replacement, $string, 1, $count);
-				 if ($count) break;
+				# This looks redundant but is needed for PHP4 compatibility
+				if (preg_match($rule, $string)) {
+					$result = preg_replace($rule, $replacement, $string, 1);
+					break;
+				}
 			}
 			if (!isset($result)) $result = $string;
 			return $result;
