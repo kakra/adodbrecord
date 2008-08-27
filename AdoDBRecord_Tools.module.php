@@ -50,11 +50,11 @@
 		}
 
 		function get_columns() {
-			$registration = AdoDBRecord_Tools::registration();
+			$registration =& AdoDBRecord_Tools::registration();
 			$table = $this->_table_name;
 			if (array_key_exists($table, $registration->_column_cache))
 				return $registration->_column_cache[$table];
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			return $registration->_column_cache[$table] = $conn->MetaColumnNames($table);
 		}
 

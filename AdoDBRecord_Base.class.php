@@ -73,7 +73,7 @@
 			$append_sql = "";
 			if (!empty($options)) $append_sql = " ${options}";
 
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			# FIXME re-add table and column quotes again later
 			if ($row = $conn->GetRow("SELECT * FROM {$this->_table_name} WHERE id = ?{$append_sql}", array($id))) {
 				# FIXME make dry
@@ -87,7 +87,7 @@
 
 		# returns an array of instances
 		function find_all($params) {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 
 			# FIXME this is inconsistent with find()
 			$options = array_shift($params);

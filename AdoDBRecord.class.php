@@ -21,7 +21,7 @@
 	require_once("Inflector.class.php");
 
 	# FIXME initiate your connection here
-#	$_adodb_conn = &ADONewConnection($database[type]);
+#	$_adodb_conn =& ADONewConnection($database[type]);
 #	$_adodb_conn->Connect($database[host],$database[user],$database[password],$database[db_name]);
 #	$_adodb_conn->debug = true;
 
@@ -79,7 +79,7 @@
 
 		# returns the last error message of the db connection
 		function errmsg() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			return $conn->ErrorMsg();
 		}
 
@@ -88,7 +88,7 @@
 		# to the db only if the columns exist (AdoDB's automagic in AutoExecute())
 		# _new_record gets cleared on successful save
 		function save() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			$this->_attributes["type"] = ($this->_type_name == $this->_base_class ? "" : $this->_type_name);
 			$this->_attributes["updated_at"] = mktime();
 			if ($this->_new_record) {
@@ -105,7 +105,7 @@
 		# delete the instance from the database, sets _new_record to false to indicate it's no longer
 		# stored in the database
 		function delete() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			if ($this->_new_record) return false;
 			# FIXME re-add table and column quotes again later
 			if ($res = $conn->Execute(sprintf("DELETE FROM %s WHERE %s", $this->_table_name, $this->_id())))
@@ -117,7 +117,7 @@
 		# if called on an instance it runs delete() on it
 		# FIXME move to polymorphic class
 		function destroy($id) {
-			$class = _class_name();
+			$class =& _class_name();
 			if (is_array($id)) {
 				foreach ($id as $one_id) eval(sprintf("$class::destroy(%d);", $one_id));
 				return;
