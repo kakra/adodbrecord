@@ -43,18 +43,29 @@
 			   	or die("Cannot register extension hook.");
 		}
 
+		# instanciate and save one or many new objects
+		function create($attribute_list) {
+			while($attributes = array_shift($attribute_list)) {
+				if (is_array($attributes) && empty($attributes))
+					$attributes = false;
+				$class = get_class($this);
+				$obj = new $class(&$attributes);
+				$obj->save();
+				$objs[] = $obj;
+			}
+			return (count($objs) > 1) ? $objs : $obj;
+		}
+
 		# returns the one record found by $id
 		# as an instance of $class
 		function find($params) {
 			$id = array_shift($params);
 
-			$limit = '';
 			switch ($id) {
 				case "all":
 					return $this->find_all($params);
 				case "first":
-					$limit = " LIMIT 1";
-					break;
+					return array_shift($this->find_all("LIMIT 1"));
 			}
 
 			# FIXME this is inconsistent with find_all()
@@ -63,7 +74,8 @@
 			if (!empty($options)) $append_sql = " ${options}";
 
 			$conn = _adodb_conn();
-			if ($row = $conn->GetRow("SELECT * FROM `" . $this->_table_name . "` WHERE `id` = ?{$append_sql}{$limit}", array($id))) {
+			# FIXME re-add table and column quotes again later
+			if ($row = $conn->GetRow("SELECT * FROM {$this->_table_name} WHERE id = ?{$append_sql}", array($id))) {
 				# FIXME make dry
 				$class = (empty($row["type"]) ? get_class($this) : $row["type"]);
 				$obj = new $class($row);
@@ -82,7 +94,8 @@
 			$append_sql = "";
 			if (!empty($options)) $append_sql = " ${options}";
 
-			if ($rows =& $conn->GetAll("SELECT * FROM `" . $this->_table_name . "`${append_sql}")) {
+			# FIXME re-add table and column quotes again later
+			if ($rows =& $conn->GetAll("SELECT * FROM {$this->_table_name}${append_sql}")) {
 				$base_class = get_class($this);
 				$objs = array();
 				foreach ($rows as $row) {

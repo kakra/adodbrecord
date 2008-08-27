@@ -22,7 +22,8 @@
 		$_adodb_conn =& ADONewConnection("sqlite");
 		$_adodb_conn->Connect(sprintf("%s/test.db", dirname(__FILE__)));
 		$_adodb_conn->debug = true;
-		$_adodb_conn->Execute("CREATE TABLE 'tests' ('id' INT(12) PRIMARY KEY, 'dummy' VARCHAR(50))");
+		# FIXME re-add table and column quotes again later
+		$_adodb_conn->Execute("CREATE TABLE tests (id INTEGER PRIMARY KEY, dummy VARCHAR(50))");
 	}
 
 	require_once("AdoDBRecord://Test_Base");
@@ -61,11 +62,18 @@
 			$this->assertEqual($dummy->_attributes["dummy"], "Test456");
 			$this->assertTrue($dummy->_attributes["id"] > 0);
 
+			# Now create two test entries at once
+			$dummys = Test::create(
+				array ("dummy" => "Test567"),
+				array ("dummy" => "Test678")
+			);
+			$this->assertEqual(count($dummys), 2);
+
 			# Return the complete table and check there is exactly one row
 			$all_rows = Test::find("all");
-			$this->assertEqual(count($all_rows), 1);
+			$this->assertEqual(count($all_rows), 3);
 
-			# Return the first row and check it matches our dummy test entry
+			# Return the first row and check it still matches our first dummy test entry
 			$first = Test::find("first");
 			$this->assertEqual($first->_attributes["dummy"], "Test456");
 			$this->assertTrue($first->_attributes["id"] > 0);

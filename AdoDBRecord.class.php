@@ -70,19 +70,11 @@
 			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
 		}
 
-		# instanciate and save a new object
-		# FIXME move to polymorphic class
-		function create($attributes = false) {
-			$class = _class_name();
-			$obj = new $class(&$attributes);
-			$obj->save();
-			return $obj;
-		}
-
 		# return the id of this record as where-clause or false if new
 		function _id() {
 			if ($this->_new_record) return false;
-			return sprintf("`id` = %d" ,$this->_attributes["id"]);
+			# FIXME re-add table and column quotes again later
+			return sprintf("id = %d" ,$this->_attributes["id"]);
 		}
 
 		# returns the last error message of the db connection
@@ -115,7 +107,8 @@
 		function delete() {
 			$conn = _adodb_conn();
 			if ($this->_new_record) return false;
-			if ($res = $conn->Execute(sprintf("DELETE FROM `%s` WHERE %s", $this->_table_name, $this->_id())))
+			# FIXME re-add table and column quotes again later
+			if ($res = $conn->Execute(sprintf("DELETE FROM %s WHERE %s", $this->_table_name, $this->_id())))
 				$this->_new_record = true;
 			return $res;
 		}
