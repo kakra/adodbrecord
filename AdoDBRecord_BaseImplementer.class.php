@@ -29,7 +29,7 @@
 
 			# work around PHP4 specifica
 			if (version_compare(PHP_VERSION, '5.0.0') < 0) {
-				$php4workarounds = "var \$_class_name = '$derived_class';";
+				$php4workarounds = "var \$_base_class = '$derived_class';";
 			}
 
 			# build class

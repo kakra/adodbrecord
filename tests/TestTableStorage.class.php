@@ -58,7 +58,8 @@
 			# Create a dummy test entry, ensure it is of correct type and got its
 			# parameters correctly saved
 			$dummy = Test::create(array ("dummy" => "Test456"));
-			$this->assertEqual(get_class($dummy), "Test");
+			$this->assertEqual(strtolower(get_class($dummy)), "test");
+			$this->assertEqual($dummy->_base_class, "Test");
 			$this->assertEqual($dummy->_attributes["dummy"], "Test456");
 			$this->assertTrue($dummy->_attributes["id"] > 0);
 
