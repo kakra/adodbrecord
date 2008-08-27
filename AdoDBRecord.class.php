@@ -16,7 +16,7 @@
 	# slash "/" in the path name. This will look for "adodb/adodb.inc.php"
 	# in your include path.
 
-	require_once("AdoDBRecord_Tools.class.php");
+	require_once("AdoDBRecord_Tools.module.php");
 	require_once("AdoDBRecord_Base.class.php");
 	require_once("Inflector.class.php");
 

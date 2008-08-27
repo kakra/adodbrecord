@@ -10,7 +10,7 @@
 	#
 	# This file holds some tools for initialization and configuration
 
-	require_once("Module.class.php");
+	require_once("Singleton.class.php");
 
 	# Return class name derived from backtrace because php isn't able
 	# to return the correct one (read: the one we need) in static call implementations
@@ -32,11 +32,11 @@
 		return $_adodb_conn;
 	}
 
-	class AdoDBRecord_Tools extends Module {
+	class AdoDBRecord_Tools extends Singleton {
 		var $_column_cache = array();
 
 		function registration() {
-			return Module::instance(__CLASS__);
+			return Singleton::instance(__CLASS__);
 		}
 
 		# AdoDB version min. v4.56 is needed
