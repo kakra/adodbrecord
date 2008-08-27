@@ -16,34 +16,37 @@
 	# slash "/" in the path name. This will look for "adodb/adodb.inc.php"
 	# in your include path.
 
-	require_once("AdoDBRecord_Tools.class.php");
+	require_once("AdoDBRecord_Tools.module.php");
 	require_once("AdoDBRecord_Base.class.php");
 	require_once("Inflector.class.php");
 
 	# FIXME initiate your connection here
-#	$_adodb_conn = &ADONewConnection($database[type]);
+#	$_adodb_conn = ADONewConnection($database[type]);
 #	$_adodb_conn->Connect($database[host],$database[user],$database[password],$database[db_name]);
 #	$_adodb_conn->debug = true;
 
 	AdoDBRecord_Tools::version_check();
 	AdoDBRecord_Tools::init();
 
-	class AdoDBRecord extends AdoDBRecord_Base {
+	define("ADODBRECORD_STUB", "ADODBRECORD_STUB");
+
+	class AdoDBRecord {
 		var $_attributes = array (); # holds the attributes
 		var $_new_record = true; # if this is a new record
-		var $_table_name = false;
+		var $_table_name = false; # set this to overwrite default
+
+		var $_type_name = NULL; # reserved for STI usage
+		var $_base_class = NULL; # reserved for STI usage
 
 		# initializer
 		function AdoDBRecord($attributes = false) {
-			$conn = _adodb_conn();
+			AdoDBRecord_Base::AdoDBRecord_Base();
+			if ($attributes && $attributes != ADODBRECORD_STUB) $this->_attributes = $attributes;
+		}
 
-			parent::AdoDBRecord_Base();
-
-			# TODO move code to seperate base class
-			if (!$this->_table_name) $this->_table_name = Inflector::pluralize(_class_name());
-			if ($_adodb_column_cache[$this->_table_name])
-			$this->_columns = AdoDBRecord_Tools::get_columns($this->_table_name);
-			if ($attributes) $this->_attributes = $attributes;
+		# standard setup hook does nothing
+		# can be implemented in derived classes
+		function setup() {
 		}
 
 		# logs an error
@@ -67,52 +70,16 @@
 			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
 		}
 
-		# instanciate and save a new object
-		function create($attributes = false) {
-			$class = _class_name();
-			$obj = new $class(&$attributes);
-			$obj->save();
-			return $obj;
-		}
-
-		# get the class name of the instance or static invocation
-		function _class() {
-			return _class_name();
-		}
-
 		# return the id of this record as where-clause or false if new
 		function _id() {
 			if ($this->_new_record) return false;
-			return sprintf("`id` = %d" ,$this->_attributes["id"]);
-		}
-
-		# returns an associative array
-		# FIXME should probably better return instances of _class_name()
-		# FIXME support to manually set table name
-		function find_all($options = false) {
-			$conn = _adodb_conn();
-			$append_sql = "";
-			if ($options) $append_sql = " ${options}";
-			return $conn->GetAll("SELECT * FROM `" . _class_name() . "`${append_sql}");
-		}
-
-		# returns the one record found by $id
-		# as an instance of _class_name()
-		# FIXME support to manually set table name
-		function &find($id) {
-			$conn = _adodb_conn();
-			$class = _class_name();
-			if ($row = $conn->GetRow("SELECT * FROM `" . _class_name() . "` WHERE `id` = ?", array($id))) {
-				$obj = new $class($row);
-				$obj->_new_record = false;
-				return $obj;
-			}
-			return NULL;
+			# FIXME re-add table and column quotes again later
+			return sprintf("id = %d" ,$this->_attributes["id"]);
 		}
 
 		# returns the last error message of the db connection
 		function errmsg() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			return $conn->ErrorMsg();
 		}
 
@@ -121,7 +88,8 @@
 		# to the db only if the columns exist (AdoDB's automagic in AutoExecute())
 		# _new_record gets cleared on successful save
 		function save() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
+			$this->_attributes["type"] = ($this->_type_name == $this->_base_class ? "" : $this->_type_name);
 			$this->_attributes["updated_at"] = mktime();
 			if ($this->_new_record) {
 				$this->_attributes["created_at"] = mktime();
@@ -137,17 +105,19 @@
 		# delete the instance from the database, sets _new_record to false to indicate it's no longer
 		# stored in the database
 		function delete() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			if ($this->_new_record) return false;
-			if ($res = $conn->Execute(sprintf("DELETE FROM `%s` WHERE %s", $this->_table_name, $this->_id())))
+			# FIXME re-add table and column quotes again later
+			if ($res = $conn->Execute(sprintf("DELETE FROM %s WHERE %s", $this->_table_name, $this->_id())))
 				$this->_new_record = true;
 			return $res;
 		}
 
 		# destroy one or more id's by finding each id and running destroy() on it
 		# if called on an instance it runs delete() on it
+		# FIXME move to polymorphic class
 		function destroy($id) {
-			$class = _class_name();
+			$class =& _class_name();
 			if (is_array($id)) {
 				foreach ($id as $one_id) eval(sprintf("$class::destroy(%d);", $one_id));
 				return;
