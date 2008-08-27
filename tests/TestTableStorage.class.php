@@ -19,7 +19,7 @@
 	function setup_sqlite_test_db() {
 		global $_adodb_conn;
 		@unlink("test.db");
-		$_adodb_conn =& ADONewConnection("sqlite");
+		$_adodb_conn = ADONewConnection("sqlite");
 		$_adodb_conn->Connect(sprintf("%s/test.db", dirname(__FILE__)));
 		$_adodb_conn->debug = true;
 		# FIXME re-add table and column quotes again later

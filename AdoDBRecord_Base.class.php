@@ -24,11 +24,13 @@
 		function AdoDBRecord_Base() {
 			# setup database configuration
 			if (!$this->_table_name) {
-				$class = get_class($this);
-				while (get_parent_class($class) && !preg_match('/_Base$/i', get_parent_class($class)))
-					$class = get_parent_class($class);
-				$this->_base_class = $class;
-				$this->_table_name = Inflector::tableize($class);
+				if (!$this->_base_class) {
+					$class = get_class($this);
+					while (get_parent_class($class) && !preg_match('/_Base$/i', get_parent_class($class)))
+						$class = get_parent_class($class);
+					$this->_base_class = $class;
+				}
+				$this->_table_name = Inflector::tableize($this->_base_class);
 			}
 			$this->_type_name = get_class($this);
 			$this->_columns = AdoDBRecord_Tools::get_columns();

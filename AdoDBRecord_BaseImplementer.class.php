@@ -27,9 +27,15 @@
 			foreach(array("find", "find_all", "create") as $method)
 				$polymorphic_methods .= $this->write_polymorphic_method($derived_class, $method);
 
+			# work around PHP4 specifica
+			if (version_compare(PHP_VERSION, '5.0.0') < 0) {
+				$php4workarounds = "var \$_class_name = '$derived_class';";
+			}
+
 			# build class
 			return <<<EOC
 				class $class extends AdoDBRecord {
+					$php4workarounds
 					$polymorphic_methods
 				}
 EOC;

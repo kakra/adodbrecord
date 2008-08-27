@@ -21,7 +21,7 @@
 	require_once("Inflector.class.php");
 
 	# FIXME initiate your connection here
-#	$_adodb_conn =& ADONewConnection($database[type]);
+#	$_adodb_conn = ADONewConnection($database[type]);
 #	$_adodb_conn->Connect($database[host],$database[user],$database[password],$database[db_name]);
 #	$_adodb_conn->debug = true;
 
