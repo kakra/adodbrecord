@@ -18,10 +18,11 @@
 	function setup_sqlite_test_db() {
 		global $_adodb_conn;
 		@unlink("test.db");
-		$_adodb_conn =& ADONewConnection("sqlite");
+		$_adodb_conn = ADONewConnection("sqlite");
 		$_adodb_conn->Connect(sprintf("%s/test.db", dirname(__FILE__)));
 		$_adodb_conn->debug = true;
-		$_adodb_conn->Execute("CREATE TABLE 'tests' ('id' INT(12) PRIMARY KEY, 'dummy' VARCHAR(10))");
+		# FIXME re-add table and column quotes again later
+		$_adodb_conn->Execute("CREATE TABLE tests (id INTEGER PRIMARY KEY, dummy VARCHAR(10))");
 	}
 
 	require_once("AdoDBRecord://Test_Base");

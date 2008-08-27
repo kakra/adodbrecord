@@ -3,7 +3,7 @@
 	#
 	# Author: Kai Krakow <kai@kaishome.de>
 	# http://github.com/kakra/adodbrecord/
-	# Version 0.3.2
+	# Version 0.4
 	#
 	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
@@ -16,12 +16,12 @@
 	# slash "/" in the path name. This will look for "adodb/adodb.inc.php"
 	# in your include path.
 
-	require_once("AdoDBRecord_Tools.class.php");
+	require_once("AdoDBRecord_Tools.module.php");
 	require_once("AdoDBRecord_Base.class.php");
 	require_once("Inflector.class.php");
 
 	# FIXME initiate your connection here
-#	$_adodb_conn = &ADONewConnection($database[type]);
+#	$_adodb_conn = ADONewConnection($database[type]);
 #	$_adodb_conn->Connect($database[host],$database[user],$database[password],$database[db_name]);
 #	$_adodb_conn->debug = true;
 
@@ -70,24 +70,16 @@
 			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
 		}
 
-		# instanciate and save a new object
-		# FIXME move to polymorphic class
-		function create($attributes = false) {
-			$class = _class_name();
-			$obj = new $class(&$attributes);
-			$obj->save();
-			return $obj;
-		}
-
 		# return the id of this record as where-clause or false if new
 		function _id() {
 			if ($this->_new_record) return false;
-			return sprintf("`id` = %d" ,$this->_attributes["id"]);
+			# FIXME re-add table and column quotes again later
+			return sprintf("id = %d" ,$this->_attributes["id"]);
 		}
 
 		# returns the last error message of the db connection
 		function errmsg() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			return $conn->ErrorMsg();
 		}
 
@@ -96,7 +88,7 @@
 		# to the db only if the columns exist (AdoDB's automagic in AutoExecute())
 		# _new_record gets cleared on successful save
 		function save() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			$this->_attributes["type"] = ($this->_type_name == $this->_base_class ? "" : $this->_type_name);
 			$this->_attributes["updated_at"] = mktime();
 			if ($this->_new_record) {
@@ -113,9 +105,10 @@
 		# delete the instance from the database, sets _new_record to false to indicate it's no longer
 		# stored in the database
 		function delete() {
-			$conn = _adodb_conn();
+			$conn =& _adodb_conn();
 			if ($this->_new_record) return false;
-			if ($res = $conn->Execute(sprintf("DELETE FROM `%s` WHERE %s", $this->_table_name, $this->_id())))
+			# FIXME re-add table and column quotes again later
+			if ($res = $conn->Execute(sprintf("DELETE FROM %s WHERE %s", $this->_table_name, $this->_id())))
 				$this->_new_record = true;
 			return $res;
 		}
@@ -124,7 +117,7 @@
 		# if called on an instance it runs delete() on it
 		# FIXME move to polymorphic class
 		function destroy($id) {
-			$class = _class_name();
+			$class =& _class_name();
 			if (is_array($id)) {
 				foreach ($id as $one_id) eval(sprintf("$class::destroy(%d);", $one_id));
 				return;
