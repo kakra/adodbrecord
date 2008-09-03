@@ -16,9 +16,14 @@
 	# slash "/" in the path name. This will look for "adodb/adodb.inc.php"
 	# in your include path.
 
-	require_once("AdoDBRecord_Tools.module.php");
-	require_once("AdoDBRecord_Base.class.php");
+	require_once("AdoDBRecord/Tools.module.php");
+	require_once("AdoDBRecord/Base.class.php");
 	require_once("Inflector.class.php");
+
+	if (version_compare(PHP_VERSION, '5.0.0') < 0)
+		require_once("AdoDBRecord/Overloadable.php4.class.php");
+	else
+		require_once("AdoDBRecord/Overloadable.class.php");
 
 	# FIXME initiate your connection here
 #	$_adodb_conn = ADONewConnection($database[type]);
@@ -30,11 +35,12 @@
 
 	define("ADODBRECORD_STUB", "ADODBRECORD_STUB");
 
-	class AdoDBRecord {
+	class AdoDBRecord extends AdoDBRecord_Overloadable {
 		var $_attributes = array (); # holds the attributes
 		var $_new_record = true; # if this is a new record
 		var $_table_name = false; # set this to overwrite default
 
+		var $_columns = array(); # reserved for internal usage
 		var $_type_name = NULL; # reserved for STI usage
 		var $_base_class = NULL; # reserved for STI usage
 
@@ -137,4 +143,5 @@
 			return $this->save();
 		}
 	}
+
 ?>

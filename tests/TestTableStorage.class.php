@@ -38,9 +38,9 @@
 			# Create a dummy test entry, ensure it got its parameters and that it's
 			# successfully saved
 			$dummy = new Test(array ("dummy" => "Test123"));
-			$this->assertEqual($dummy->_attributes["dummy"], "Test123");
+			$this->assertEqual($dummy->dummy, "Test123");
 			$this->assertTrue($dummy->save());
-			$this->assertTrue($dummy->_attributes["id"] > 0);
+			$this->assertTrue($dummy->id > 0);
 
 			# Return the complete table and check there is exactly one row
 			$all_rows = Test::find("all");
@@ -48,8 +48,8 @@
 
 			# Return the first row and check it matches our dummy test entry
 			$first = Test::find("first");
-			$this->assertEqual($first->_attributes["dummy"], "Test123");
-			$this->assertTrue($first->_attributes["id"] > 0);
+			$this->assertEqual($first->dummy, "Test123");
+			$this->assertTrue($first->id > 0);
 		}
 
 		function test_create() {
@@ -60,8 +60,8 @@
 			$dummy = Test::create(array ("dummy" => "Test456"));
 			$this->assertEqual(strtolower(get_class($dummy)), "test");
 			$this->assertEqual($dummy->_base_class, "Test");
-			$this->assertEqual($dummy->_attributes["dummy"], "Test456");
-			$this->assertTrue($dummy->_attributes["id"] > 0);
+			$this->assertEqual($dummy->dummy, "Test456");
+			$this->assertTrue($dummy->id > 0);
 
 			# Now create two test entries at once
 			$dummys = Test::create(
@@ -76,8 +76,8 @@
 
 			# Return the first row and check it still matches our first dummy test entry
 			$first = Test::find("first");
-			$this->assertEqual($first->_attributes["dummy"], "Test456");
-			$this->assertTrue($first->_attributes["id"] > 0);
+			$this->assertEqual($first->dummy, "Test456");
+			$this->assertTrue($first->id > 0);
 		}
 	}
 ?>

@@ -10,7 +10,7 @@
 	#
 	# This file holds some tools for initialization and configuration
 
-	require_once("Singleton.class.php");
+	require_once("../Singleton.class.php");
 
 	# Return class name derived from backtrace because php isn't able
 	# to return the correct one (read: the one we need) in static call implementations
@@ -61,7 +61,7 @@
 		function init() {
 			global $PREFIX_ADODB;
 			require_once("${PREFIX_ADODB}adodb.inc.php");
-			require_once("AdoDBRecord_Base.class.php");
+			require_once("Base.class.php");
 			$registration  = AdoDBRecord_Tools::registration();
 			$registration->_column_cache = array();
 			AdoDBRecord_Base::register_hooks();

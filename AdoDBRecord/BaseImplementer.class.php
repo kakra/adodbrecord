@@ -13,7 +13,7 @@
 	# which ClassName can extend and creates some basic methods like
 	# attribute accessors.
 
-	require_once("AdoDBRecord_Implementer.class.php");
+	require_once("Implementer.class.php");
 
 	class AdoDBRecord_BaseImplementer extends AdoDBRecord_Implementer {
 		function create_stream($class_name) {
@@ -51,15 +51,6 @@ EOC;
 					return \$instance->__polymorphic_$method(\$params);
 				}
 EOP;
-		}
-
-		function write_attr_accessor($attribute) {
-			return <<<EOA
-				function $attribute() {
-					\$params = func_get_args();
-					return AdoDBRecord_Base::attribute(\$params);
-				}
-EOA;
 		}
 	}
 ?>

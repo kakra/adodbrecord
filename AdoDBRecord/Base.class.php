@@ -13,7 +13,7 @@
 	# name parsers. This works by registering hooks which define derived classes
 	# in global space and by defining base methods.
 
-	require_once("AdoDBRecord_BaseImplementer.class.php");
+	require_once("BaseImplementer.class.php");
 
 	# class to polymorphic implement AdoDBRecord functionality
 	# This makes use of PHP's behaviour to always pass the $this variable
@@ -124,6 +124,37 @@
 					$params = array_shift($params);
 				default:
 					return $this->_attributes[$name] = $params;
+			}
+		}
+
+		# parses the member access initiated by __set() or __get()
+		# and checks if it is available as column or association (TODO)
+		# and results in an error otherwise
+		function parse_member() {
+			$args = func_get_args();
+			switch (count($args)) {
+				case 1:
+					# this call was made by __get()
+					# TODO check property is valid (_associations)
+					list($property) = $args;
+					if (in_array($property, $this->_columns))
+						return $this->_attributes[$property];
+					# TODO write a real error handler
+					die(get_class($this) . "->{$property}: No such property");
+
+				case 2:
+					# this call was made by __set()
+					# TODO check property is valid (_associations)
+					list($property, $value) = $args;
+					if (in_array($property, $this->_columns))
+						return $this->_attributes[$property] = $value;
+					# TODO write a real error handler
+					die(get_class($this) . "->{$property}: No such property");
+
+				default:
+					# this call was made by some chaotic wizard and is invalid
+					# TODO write a real error handler
+					die("AdoDBRecord_Base::parse_member(): unexpected arguments received");
 			}
 		}
 	}

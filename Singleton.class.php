@@ -10,7 +10,7 @@
 	#
 	# This class is used to provide singleton access to classes and objects.
 
-	require_once("AdoDBRecord_Tools.module.php");
+	require_once("AdoDBRecord/Tools.module.php");
 
 	class Singleton {
 		function &instance($class = false) {
