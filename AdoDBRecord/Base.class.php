@@ -37,7 +37,7 @@
 
 			# dynamically overload current class in PHP4 because it doesn't
 			# propagate through the class hierarchy
-			if (version_compare(PHPVERSION, "5.0.0") < 0) {
+			if (version_compare(PHP_VERSION, "5.0.0") < 0) {
 				$const = "OVERLOADED_" . $this->_type_name;
 				if (!defined($const)) {
 					define($const, $const);
@@ -166,6 +166,24 @@
 					# TODO write a real error handler
 					die("AdoDBRecord_Base::parse_member(): unexpected arguments received");
 			}
+		}
+
+		# parses the method access initiated by __call() and reduces it to its
+		# associated real method attaching appropriate parameters
+		function parse_method() {
+			$args = func_get_args();
+			$methods = array("find_by", "find_all_by", "find_first_by");
+			$arg = array_shift($args);
+			foreach ($methods as $method)
+				if (substr($arg, 0, $len = (strlen($method) + 1)) === "{$method}_") {
+					$condition = substr($arg, $len);
+					$method = "_parse_{$method}";
+					if (in_array($method, get_class_methods($this)))
+						return call_user_method($method, $this, $condition, $args);
+					break;
+				}
+			# TODO improve error handler
+			die("Unknown method called: {$this->_type_name}::{$arg}\n");
 		}
 	}
 ?>

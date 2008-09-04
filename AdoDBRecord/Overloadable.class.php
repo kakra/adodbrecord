@@ -16,10 +16,17 @@
 	#	* Define magic methods using the PHP5 interface and map them to more generic versions
 
 	require_once("Base.class.php");
+	require_once("Overloadable/Parsers.php");
 
-	class AdoDBRecord_Overloadable {
-		
+	class AdoDBRecord_Overloadable extends AdoDBRecord_Overloadable_Parsers {
+
 		private function __call($method, $args) {
+			return AdoDBRecord_Base::parse_method($method, $args);
+		}
+
+		private function __callStatic($method, $args) {
+			# allows to call magic methods statically in PHP >=5.3
+			# use singleton instances until then
 			return AdoDBRecord_Base::parse_method($method, $args);
 		}
 

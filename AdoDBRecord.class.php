@@ -36,7 +36,10 @@
 	define("ADODBRECORD_STUB", "ADODBRECORD_STUB");
 
 	class AdoDBRecord extends AdoDBRecord_Overloadable {
-		var $_attributes = array (); # holds the attributes
+		var $_attributes = array(); # holds the attributes
+		var $_has_many = array(); # holds the has-many associations (1:n)
+		var $_has_one = array(); # holds the has-one associations (1:1)
+		var $_belongs_to = array(); # holds the belongs-to associations (n:1)
 		var $_new_record = true; # if this is a new record
 		var $_table_name = false; # set this to overwrite default
 
@@ -144,7 +147,7 @@
 		function set_attributes($attributes) {
 			return $this->_attributes = array_merge($this->_attributes, $attributes);
 		}
-		
+
 		# updates the attributes by merging the new array with the existing
 		# attributes and saves the object
 		function update_attributes($attributes) {

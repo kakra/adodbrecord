@@ -22,7 +22,7 @@
 
 	require_once("Base.class.php");
 
-	class AdoDBRecord_Overloadable {
+	class AdoDBRecord_Overloadable extends AdoDBRecord_Overloadable_Parsers {
 
 		function __call($method, $args, &$return) {
 			$return = AdoDBRecord_Base::parse_method($method, $args);
