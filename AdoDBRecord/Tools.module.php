@@ -55,7 +55,7 @@
 			if (array_key_exists($table, $registration->_column_cache))
 				return $registration->_column_cache[$table];
 			$conn =& _adodb_conn();
-			return $registration->_column_cache[$table] = $conn->MetaColumnNames($table);
+			return $registration->_column_cache[$table] =& $conn->MetaColumnNames($table);
 		}
 
 		function init() {

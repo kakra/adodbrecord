@@ -39,7 +39,4 @@
 			return true;
 		}
 	}
-
-	/* enable __call(), __get() and __set() methods */
-	overload('AdoDBRecord_Overloadable');
 ?>

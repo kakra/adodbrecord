@@ -72,7 +72,7 @@
 		# private attribute setter
 		# returns the new value
 		function _set_attribute($attribute, $value, $db_only = true) {
-			if (!$db_only || in_array($attribute, $this->_columns)) return $this->_attributes[$attributes] = $value;
+			if (!$db_only || in_array($attribute, $this->_columns)) return $this->set_attributes(array($attribute => $value));
 			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
 		}
 
@@ -80,7 +80,7 @@
 		function _id() {
 			if ($this->_new_record) return false;
 			# FIXME re-add table and column quotes again later
-			return sprintf("id = %d" ,$this->_attributes["id"]);
+			return sprintf("id = %d" ,$this->id);
 		}
 
 		# returns the last error message of the db connection
@@ -95,12 +95,15 @@
 		# _new_record gets cleared on successful save
 		function save() {
 			$conn =& _adodb_conn();
-			$this->_attributes["type"] = ($this->_type_name == $this->_base_class ? "" : $this->_type_name);
-			$this->_attributes["updated_at"] = mktime();
+			$this->set_attributes(array(
+				"type" => ($this->_type_name == $this->_base_class) ? NULL : $this->_type_name,
+				"updated_at" => mktime()
+			));
+
 			if ($this->_new_record) {
-				$this->_attributes["created_at"] = mktime();
+				$this->set_attributes(array("created_at" => mktime()));
 				if ($res = $conn->AutoExecute($this->_table_name, $this->_attributes, 'INSERT')) {
-					$this->_attributes["id"] = $conn->Insert_ID();
+					$this->id = $conn->Insert_ID();
 					$this->_new_record = false;
 				}
 				return $res;
@@ -137,9 +140,15 @@
 		}
 
 		# updates the attributes by merging the new array with the existing
+		# attributes without saving the object
+		function set_attributes($attributes) {
+			return $this->_attributes = array_merge($this->_attributes, $attributes);
+		}
+		
+		# updates the attributes by merging the new array with the existing
 		# attributes and saves the object
 		function update_attributes($attributes) {
-			$this->_attributes = array_merge($this->_attributes, $attributes);
+			$this->set_attributes($attributes);
 			return $this->save();
 		}
 	}

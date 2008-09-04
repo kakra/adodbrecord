@@ -35,6 +35,16 @@
 			$this->_type_name = get_class($this);
 			$this->_columns = AdoDBRecord_Tools::get_columns();
 
+			# dynamically overload current class in PHP4 because it doesn't
+			# propagate through the class hierarchy
+			if (version_compare(PHPVERSION, "5.0.0") < 0) {
+				$const = "OVERLOADED_" . $this->_type_name;
+				if (!defined($const)) {
+					define($const, $const);
+					overload($this->_type_name);
+				}
+			}
+
 			# call the setup hook
 			$this->setup();
 		}
@@ -77,7 +87,7 @@
 
 			$conn =& _adodb_conn();
 			# FIXME re-add table and column quotes again later
-			if ($row = $conn->GetRow("SELECT * FROM {$this->_table_name} WHERE id = ?{$append_sql}", array($id))) {
+			if ($row =& $conn->GetRow("SELECT * FROM {$this->_table_name} WHERE id = ?{$append_sql}", array($id))) {
 				# FIXME make dry
 				$class = (empty($row["type"]) ? get_class($this) : $row["type"]);
 				$obj = new $class($row);
@@ -123,7 +133,7 @@
 				case 1:
 					$params = array_shift($params);
 				default:
-					return $this->_attributes[$name] = $params;
+					return $this->set_attributes(array($name => $params));
 			}
 		}
 
@@ -147,7 +157,7 @@
 					# TODO check property is valid (_associations)
 					list($property, $value) = $args;
 					if (in_array($property, $this->_columns))
-						return $this->_attributes[$property] = $value;
+						return $this->set_attributes(array($property => $value));
 					# TODO write a real error handler
 					die(get_class($this) . "->{$property}: No such property");
 
