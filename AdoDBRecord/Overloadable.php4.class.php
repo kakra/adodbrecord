@@ -23,17 +23,20 @@
 	require_once("Base.class.php");
 
 	class AdoDBRecord_Overloadable {
-		
+
 		function __call($method, $args, &$return) {
 			$return = AdoDBRecord_Base::parse_method($method, $args);
+			return true;
 		}
 
 		function __get($property, &$return) {
 			$return = AdoDBRecord_Base::parse_member($property);
+			return true;
 		}
 
 		function __set($property, $value) {
 			AdoDBRecord_Base::parse_member($property, $value);
+			return true;
 		}
 	}
 
