@@ -3,7 +3,7 @@
 	#
 	# Author: Kai Krakow <kai@kaishome.de>
 	# http://github.com/kakra/adodbrecord/
-	# Version 0.4
+	# Version 0.4.1
 	#
 	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
@@ -66,7 +66,7 @@
 		# private attribute setter
 		# returns the new value
 		function _set_attribute($attribute, $value, $db_only = true) {
-			if (!$db_only || in_array($attribute, $this->_columns)) return $this->_attributes[$attributes] = $value;
+			if (!$db_only || in_array($attribute, $this->_columns)) return $this->_attributes[$attribute] = $value;
 			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
 		}
 
