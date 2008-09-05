@@ -49,6 +49,39 @@
 			die("AdoDBRecord: Your AdoDB version is too old. Requiring at least v4.56.");
 		}
 
+		# converts an array to a sql parameter list suitable for "IN" conditionals, so it can be
+		# passed to AdoDB correctly
+		function convert_sql_params(&$sql, &$array) {
+			$conn = _adodb_conn();
+
+			$sql_array = explode("?", $sql);
+			$sql = ""; $i = 0;
+			foreach ($array as $k => $v) {
+				$sql .= $sql_array[$i];
+				if (is_array($v)) {
+					unset($array[$k]);
+					foreach ($v as $kp => $p) if (!is_numeric($p)) $v[$kp] = $conn->qstr($p);
+					$sql .= join($v, ",");
+				}
+				else
+					$sql .= "?";
+				$i++;
+			}
+			$sql .= $sql_array[$i];
+		}
+
+		# parse conditions recursively
+		function parse_conditions($conditions, &$parsed_conditions, &$parsed_params) {
+			if (empty($conditions)) return;
+			if (!is_array(reset($conditions))) {
+				$parsed_conditions[] = array_shift($conditions);
+				if (count($conditions) > 0) $parsed_params = array_merge($parsed_params, $conditions);
+				return;
+			}
+			foreach ($conditions as $condition)
+				AdoDBRecord_Tools::parse_conditions($condition, $parsed_conditions, $parsed_params);
+		}
+
 		function get_columns() {
 			$registration =& AdoDBRecord_Tools::registration();
 			$table = $this->_table_name;
@@ -59,8 +92,11 @@
 		}
 
 		function init() {
-			global $PREFIX_ADODB;
+			global $PREFIX_ADODB, $ADODB_FETCH_MODE;
+
 			require_once("${PREFIX_ADODB}adodb.inc.php");
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 			require_once("Base.class.php");
 			$registration  = AdoDBRecord_Tools::registration();
 			$registration->_column_cache = array();

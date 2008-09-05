@@ -14,8 +14,24 @@
 	class AdoDBRecord_Overloadable_Parsers {
 
 		function _parse_find_by($fields, $arguments) {
-			# TODO do real stuff here
-			echo("called _parse_find_by('$fields',".var_export($arguments, true).")\n");
+			# split fields and create conditions
+			$fields = explode("_and_", $fields);
+			$conditions = array();
+			foreach ($fields as $field) {
+				$arg = array_shift($arguments);
+				if (is_array($arg))
+					$conditions[] = array("{$field} IN (?)", $arg);
+				else
+					$conditions[] = array("{$field} = ?", $arg);
+			}
+
+			# prepare arguments array to contain array conditions
+			if (!isset($arguments["conditions"])) $arguments["conditions"] = array();
+			if (!is_array($arguments["conditions"])) $arguments["conditions"] = array($arguments["conditions"]);
+
+			# merge parsed conditions and call native finder
+			$arguments = array_merge_recursive($arguments, array("conditions" => $conditions));
+			return AdoDBRecord_Base::find($arguments);
 		}
 
 		function _parse_find_all_by($fields, $arguments) {

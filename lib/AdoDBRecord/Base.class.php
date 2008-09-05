@@ -68,57 +68,100 @@
 			return (count($objs) > 1) ? $objs : $obj;
 		}
 
-		# returns the one record found by $id
-		# as an instance of $class
-		function find($params) {
-			$id = array_shift($params);
+		# returns the records found by $arguments
+		# as an instance or array of instances of $class
+		function &find($arguments) {
+			$conditions = array();
+			$where = $order = $limit = $offset = NULL;
+			$options = array();
 
-			switch ($id) {
-				case "all":
-					return $this->find_all($params);
-				case "first":
-					return array_shift($this->find_all("LIMIT 1"));
+			# flatten all arguments if their key is numeric
+			# this resolves e.g. array(1, 2, array("conditions" => "foo")) into array(1, 2, "conditions" => "foo")
+			while (true) {
+				$break = true;
+				foreach ($arguments as $key => $value) if (is_numeric($key) && is_array($value))
+				{
+					unset($arguments[$key]);
+					$arguments = array_merge_recursive($arguments, $value);
+					$break = false;
+					break;
+				}
+				if ($break) break;
 			}
 
-			# FIXME this is inconsistent with find_all()
-			$options = array_shift($params);
-			$append_sql = "";
-			if (!empty($options)) $append_sql = " ${options}";
+			# parse arguments into query parameters
+			foreach ($arguments as $key => $arg) {
+				if (is_numeric($key))
+				{
+					switch ($arg) {
+						case "all":
+							$limit = $offset = NULL;
+							$options[] = $arg;
+							continue 2;
+						case "first":
+							$limit = 1;
+							$offset = NULL;
+							$options[] = $arg;
+							continue 2;
+						default:
+							$key = "id";
+					}
+				}
+				switch ($key) {
+					case "conditions":
+						if (!is_array($arg)) $arg = array($arg);
+						$conditions = array_merge_recursive($conditions, $arg);
+						break;
+					case "limit":
+					case "offset":
+					case "order":
+						$$key = $arg;
+						break;
+					default:
+						if (is_array($arg))
+							$conditions[] = sprintf("{$key} IN (?)", $arg);
+						else
+							$conditions[] = array("{$key} = ?", $arg);
+				}
+			}
 
+			# parse conditions
+			$parsed_conditions = array();
+			$parsed_params = array();
+			AdoDBRecord_Tools::parse_conditions($conditions, $parsed_conditions, $parsed_params);
+
+			# convert parsed options to sql
+			if ($order !== NULL) $order = " ORDER BY {$order}";
+			if (!empty($parsed_conditions)) {
+				$where = sprintf(" WHERE (%s)", join($parsed_conditions, ") AND ("));
+				AdoDBRecord_Tools::convert_sql_params($where, $parsed_params);
+			}
+
+			$objs = array();
 			$conn =& _adodb_conn();
 			# FIXME re-add table and column quotes again later
-			if ($row =& $conn->GetRow("SELECT * FROM {$this->_table_name} WHERE id = ?{$append_sql}", array($id))) {
-				# FIXME make dry
-				$class = (empty($row["type"]) ? get_class($this) : $row["type"]);
-				$obj = new $class($row);
-				$obj->_new_record = false;
-				return $obj;
+			if ($limit === NULL) $limit = -1;
+			if ($offset === NULL) $offset = -1;
+			if ($rs =& $conn->SelectLimit("SELECT * FROM {$this->_table_name}{$where}{$order}", $limit, $offset, $parsed_params)) {
+				$rows =& $rs->GetRows();
+				foreach ($rows as $row) {
+					$class = (empty($row["type"]) ? get_class($this) : $row["type"]);
+					$obj = new $class($row);
+					$obj->_new_record = false;
+					$objs[] = $obj;
+				}
+				if (in_array("all", $options)) return $objs;
+				if (in_array("first", $options)) return $objs[0];
+				if (count($objs) == 1) return $objs[0];
+				return $objs;
 			}
 			return NULL;
 		}
 
 		# returns an array of instances
-		function find_all($params) {
-			$conn =& _adodb_conn();
-
-			# FIXME this is inconsistent with find()
-			$options = array_shift($params);
-			$append_sql = "";
-			if (!empty($options)) $append_sql = " ${options}";
-
-			# FIXME re-add table and column quotes again later
-			if ($rows =& $conn->GetAll("SELECT * FROM {$this->_table_name}${append_sql}")) {
-				$base_class = get_class($this);
-				$objs = array();
-				foreach ($rows as $row) {
-					# FIXME make dry
-					$class = (empty($row["type"]) ? $base_class : $row["type"]);
-					$objs[] = new $class($row);
-					$obj->_new_record = false;
-				}
-				return $objs;
-			}
-			return NULL;
+		function &find_all($arguments) {
+			array_unshift($arguments, "all");
+			return AdoDBRecord_Base::find($arguments);
 		}
 
 		# sets or reads an attribute depending on parameter count
@@ -170,10 +213,8 @@
 
 		# parses the method access initiated by __call() and reduces it to its
 		# associated real method attaching appropriate parameters
-		function parse_method() {
-			$args = func_get_args();
+		function parse_method($arg, $args) {
 			$methods = array("find_by", "find_all_by", "find_first_by");
-			$arg = array_shift($args);
 			foreach ($methods as $method)
 				if (substr($arg, 0, $len = (strlen($method) + 1)) === "{$method}_") {
 					$condition = substr($arg, $len);

@@ -8,8 +8,7 @@
 	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
 	#
-	# This implements testing if object storage on tables and restoration
-	# works properly.
+	# This implements testing if magic methods on finders work properly.
 
 	require_once("simpletest/autorun.php");
 
@@ -50,14 +49,8 @@
 			$this->assertEqual(strtolower(get_class($dummy)), "test");
 			$this->assertEqual($dummy->dummy, "Test 1");
 
-			# Test find_by two single ids
-			$dummies = $Test->find_by_id(1, 2);
-			$this->assertEqual(count($dummies), 2);
-			$this->assertEqual($dummies[0]->dummy, "Test 1");
-			$this->assertEqual($dummies[1]->dummy, "Test 2");
-
 			# Test find_by id array
-			$dummies = $Test->find_by_id(array(1, 2));
+			$dummies = $Test->find_by_id(array(1, 2), array("order" => "id"));
 			$this->assertEqual(count($dummies), 2);
 			$this->assertEqual($dummies[0]->dummy, "Test 1");
 			$this->assertEqual($dummies[1]->dummy, "Test 2");
@@ -65,6 +58,17 @@
 			# Test it works with strings, too
 			$dummy = $Test->find_by_dummy("Test 2");
 			$this->assertEqual($dummy->id, 2);
+
+			# Test their combination
+			$dummy = $Test->find_by_id_and_dummy(1, "Test 1");
+			$this->assertEqual($dummy->id, 1);
+			$this->assertEqual($dummies[0]->dummy, "Test 1");
+
+			# Test their array'ed combination
+			$dummies = $Test->find_by_id_and_dummy(array(1, 2), array("Test 1", "Test 2"), array("order" => "id"));
+			$this->assertEqual(count($dummies), 2);
+			$this->assertEqual($dummies[0]->dummy, "Test 1");
+			$this->assertEqual($dummies[1]->dummy, "Test 2");
 		}
 	}
 ?>
