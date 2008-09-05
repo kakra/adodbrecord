@@ -21,6 +21,7 @@
 		die("Missing 'overload' PHP extension. Please enable it.");
 
 	require_once("Base.class.php");
+	require_once("Overloadable/Parsers.php");
 
 	class AdoDBRecord_Overloadable extends AdoDBRecord_Overloadable_Parsers {
 
