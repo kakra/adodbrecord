@@ -13,7 +13,7 @@
 	require_once("simpletest/autorun.php");
 
 	$PREFIX_ADODB = "adodb/";
-	require_once("../AdoDBRecord.class.php");
+	require_once("../lib/AdoDBRecord.class.php");
 
 	function setup_sqlite_test_db() {
 		global $_adodb_conn;

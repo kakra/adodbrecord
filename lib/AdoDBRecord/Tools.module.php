@@ -10,7 +10,7 @@
 	#
 	# This file holds some tools for initialization and configuration
 
-	require_once("../Singleton.class.php");
+	require_once("../lib/Singleton.class.php");
 
 	# Return class name derived from backtrace because php isn't able
 	# to return the correct one (read: the one we need) in static call implementations
