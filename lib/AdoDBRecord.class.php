@@ -58,25 +58,29 @@
 		function setup() {
 		}
 
+		# add one or more has_many relations to the object, usually run inside the
+		# setup method
+		function has_many() {
+			$this->_has_many = array_merge($this->_has_many, func_get_args());
+		}
+
+		# add one or more has_one relations to the object, usually run inside the
+		# setup method
+		function has_one() {
+			$this->_has_one = array_merge($this->_has_one, func_get_args());
+		}
+
+		# add one or more belongs_to relations to the object, usually run inside the
+		# setup method
+		function belongs_to() {
+			$this->_belongs_to = array_merge($this->_belongs_to, func_get_args());
+		}
+
 		# logs an error
 		# FIXME to be moved to seperate class
 		function log_error($message, $priority = E_USER_NOTICE, $fatal = false) {
 			trigger_error($message, $priority);
 			if ($fatal) die($message);
-		}
-
-		# private attribute getter
-		# returns the current value
-		function _get_attribute($attribute, $db_only = true) {
-			if (!$db_only || in_array($attribute, $this->_columns)) return $this->_attributes[$attribute];
-			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
-		}
-
-		# private attribute setter
-		# returns the new value
-		function _set_attribute($attribute, $value, $db_only = true) {
-			if (!$db_only || in_array($attribute, $this->_columns)) return $this->set_attributes(array($attribute => $value));
-			AdoDBRecord::log_error("column not found", E_USER_ERROR, true);
 		}
 
 		# return the id of this record as where-clause or false if new
@@ -123,23 +127,6 @@
 			if ($res = $conn->Execute(sprintf("DELETE FROM %s WHERE %s", $this->_table_name, $this->_id())))
 				$this->_new_record = true;
 			return $res;
-		}
-
-		# destroy one or more id's by finding each id and running destroy() on it
-		# if called on an instance it runs delete() on it
-		# FIXME move to polymorphic class
-		function destroy($id) {
-			$class =& _class_name();
-			if (is_array($id)) {
-				foreach ($id as $one_id) eval(sprintf("$class::destroy(%d);", $one_id));
-				return;
-			}
-			if (isset($this))
-				return $this->delete();
-			else {
-				eval(sprintf("\$obj = $class::find(%d);", $id));
-				return $obj->destroy();
-			}
 		}
 
 		# updates the attributes by merging the new array with the existing

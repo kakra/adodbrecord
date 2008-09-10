@@ -24,7 +24,7 @@
 
 			# build polymorphic method interface
 			$polymorphic_methods = "";
-			foreach(array("find", "find_all", "create") as $method)
+			foreach(array("find", "find_all", "create", "destroy") as $method)
 				$polymorphic_methods .= $this->write_polymorphic_method($derived_class, $method);
 
 			# work around PHP4 specifica

@@ -15,7 +15,7 @@
 
 	require_once("BaseImplementer.class.php");
 
-	# class to polymorphic implement AdoDBRecord functionality
+	# class to polymorphically implement AdoDBRecord functionality
 	# This makes use of PHP's behaviour to always pass the $this variable
 	# if a method is called statically from an instance method call. This one
 	# has intentionally no parent class to provide a private namespace.
@@ -66,6 +66,17 @@
 				$objs[] = $obj;
 			}
 			return (count($objs) > 1) ? $objs : $obj;
+		}
+
+		# destroy one or more id's by finding each id and running destroy() on it
+		# if called on an instance it runs delete() on it
+		function destroy($id) {
+			if (is_array($id)) {
+				foreach ($id as $one_id) AdoDBRecord_Base::destroy($one_id);
+				return;
+			}
+			$obj = AdoDBRecord_Base::find($id);
+			$obj->delete();
 		}
 
 		# returns the records found by $arguments
