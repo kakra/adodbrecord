@@ -50,5 +50,6 @@ done.
 Directory Layout
 ================
 
+lib      ... Main class, class tree
 examples ... Sample code, usage
 tests    ... Unit tests
