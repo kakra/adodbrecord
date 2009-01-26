@@ -27,7 +27,7 @@
 
 		function stream_open($path, $mode, $options, &$opened_path) {
 			$this->position = 0;
-			$this->stream = '<?php ' . $this->create_stream(preg_replace("#^.*://#", "", $path, 1)) or die("Stream creation failed for '$path'") . ' ?>';
+			$this->stream = '<?php ' . ($this->create_stream(preg_replace("#^.*://#", "", $path, 1)) or die("Stream creation failed for '$path'")) . ' ?>';
 			$opened_path = $path;
 			return true;
 		}

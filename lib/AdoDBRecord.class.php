@@ -41,7 +41,10 @@
 		var $_has_one = array(); # holds the has-one associations (1:1)
 		var $_belongs_to = array(); # holds the belongs-to associations (n:1)
 		var $_new_record = true; # if this is a new record
-		var $_table_name = false; # set this to overwrite default
+		var $_table_name = false; # set this to override default
+
+		var $_scoped_methods = array();
+		var $_scope = array("find" => null, "create" => null);
 
 		var $_columns = array(); # reserved for internal usage
 		var $_type_name = NULL; # reserved for STI usage

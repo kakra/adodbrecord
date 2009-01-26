@@ -88,5 +88,10 @@
 			$registration->_column_cache = array();
 			AdoDBRecord_Base::register_hooks();
 		}
+
+		# check if the named property is a column property
+		function is_column_property($name) {
+			return in_array($property, $this->_columns);
+		}
 	}
 ?>

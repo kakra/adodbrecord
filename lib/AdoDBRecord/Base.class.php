@@ -12,8 +12,12 @@
 	# methods for attribute setters and getters and other functions like method
 	# name parsers. This works by registering hooks which define derived classes
 	# in global space and by defining base methods.
+	#
+	# TODO: Implement association proxies (parse_* functions, wrap into scope)
+	# TODO: Implement scoping
 
 	require_once("BaseImplementer.class.php");
+	require_once("Tools.module.php");
 
 	# class to polymorphically implement AdoDBRecord functionality
 	# This makes use of PHP's behaviour to always pass the $this variable
@@ -201,8 +205,8 @@
 					# this call was made by __get()
 					# TODO check property is valid (_associations)
 					list($property) = $args;
-					if (in_array($property, $this->_columns))
-						return $this->_attributes[$property];
+					if (AdoDBRecord_Tools::is_column_property($property)) return $this->_attributes[$property];
+
 					# TODO write a real error handler
 					die(get_class($this) . "->{$property}: No such property");
 
@@ -210,8 +214,8 @@
 					# this call was made by __set()
 					# TODO check property is valid (_associations)
 					list($property, $value) = $args;
-					if (in_array($property, $this->_columns))
-						return $this->set_attributes(array($property => $value));
+					if (AdoDBRecord_Tools::is_column_property($property)) return $this->set_attributes(array($property => $value));
+
 					# TODO write a real error handler
 					die(get_class($this) . "->{$property}: No such property");
 
