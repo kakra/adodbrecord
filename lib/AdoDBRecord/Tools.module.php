@@ -93,5 +93,25 @@
 		function is_column_property($name) {
 			return in_array($property, $this->_columns);
 		}
+
+		# check if the named property is part of a has_many association
+		function is_has_many_property($name) {
+			return array_key_exists($property, $this->_has_many);
+		}
+
+		# check if the named property is part of a has_one association
+		function is_has_one_property($name) {
+			return array_key_exists($property, $this->_has_one);
+		}
+
+		# check if the named property is part of a has_many association
+		function is_belongs_to_property($name) {
+			return array_key_exists($property, $this->_belongs_to);
+		}
+
+		# check if the named property is part of any association
+		function is_association_property($name) {
+			return is_belongs_to_property($name) || is_has_many_property($name) || is_has_one_property($name)
+		}
 	}
 ?>

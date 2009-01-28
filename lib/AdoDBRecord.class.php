@@ -63,20 +63,20 @@
 
 		# add one or more has_many relations to the object, usually run inside the
 		# setup method
-		function has_many() {
-			$this->_has_many = array_merge($this->_has_many, func_get_args());
+		function has_many($what, $options) {
+			$this->_has_many = array_merge($this->_has_many, array($what => $options));
 		}
 
 		# add one or more has_one relations to the object, usually run inside the
 		# setup method
-		function has_one() {
-			$this->_has_one = array_merge($this->_has_one, func_get_args());
+		function has_one($what, $options) {
+			$this->_has_one = array_merge($this->_has_one, array($what => $options));
 		}
 
 		# add one or more belongs_to relations to the object, usually run inside the
 		# setup method
-		function belongs_to() {
-			$this->_belongs_to = array_merge($this->_belongs_to, func_get_args());
+		function belongs_to($what, $options) {
+			$this->_belongs_to = array_merge($this->_belongs_to, array($what => $options));
 		}
 
 		# logs an error
