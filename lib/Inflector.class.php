@@ -60,6 +60,22 @@
 			return strtolower($string);
 		}
 
+		# converts underscores to camel case
+		function camelize($string, $first_letter_in_uppercase = true) {
+			if ($first_letter_in_uppercase)
+			{
+				$string = preg_replace_callback('/\/(.?)/', create_function('$m', 'return "::" . strtoupper($m[1]);'), $string);
+				return preg_replace_callback('/(?:^|_)(.)/', create_function('$m', 'return strtoupper($m[1]);'), $string);
+			}
+			else
+				return strtolower($string[0]) . Inflector::camelize(substr($string, 1));
+		}
+
+		# converts table name to class name
+		function classify($string) {
+			return str_replace('::', '_', Inflector::camelize(Inflector::singularize(preg_replace('/^.*\./', '', $string))));
+		}
+
 		# converts class name to table name
 		function tableize($string) {
 			return Inflector::pluralize(Inflector::underscore($string));

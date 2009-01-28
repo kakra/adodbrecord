@@ -64,18 +64,48 @@
 		# add one or more has_many relations to the object, usually run inside the
 		# setup method
 		function has_many($what, $options) {
+			$table = Inflector::tableize($what);
+			$default_options = array(
+				"class_name" => Inflector::classify($table),
+				"primary_key" => "id",
+				"foreign_key" => Inflector::singularize($this->_base_class) . "_id",
+				"dependent" => "nullify",
+				"uniq" => false
+				"select" => "*",
+				"validate" => true
+			);
+			$options = array_merge($default_options, $options);
 			$this->_has_many = array_merge($this->_has_many, array($what => $options));
 		}
 
 		# add one or more has_one relations to the object, usually run inside the
 		# setup method
 		function has_one($what, $options) {
+			$table = Inflector::tableize($what);
+			$default_options = array(
+				"class_name" => Inflector::classify($table),
+				"primary_key" => "id",
+				"foreign_key" => Inflector::singularize($this->_base_class) . "_id",
+				"dependent" => "nullify",
+				"select" => "*",
+				"validate" => true
+			);
+			$options = array_merge($default_options, $options);
 			$this->_has_one = array_merge($this->_has_one, array($what => $options));
 		}
 
 		# add one or more belongs_to relations to the object, usually run inside the
 		# setup method
 		function belongs_to($what, $options) {
+			$table = Inflector::tableize($what);
+			$default_options = array(
+				"class_name" => Inflector::classify($table),
+				"foreign_key" => Inflector::singularize($table) . "_id",
+				"polymorphic" => false,
+				"select" => "*",
+				"validate" => false
+			);
+			$options = array_merge($default_options, $options);
 			$this->_belongs_to = array_merge($this->_belongs_to, array($what => $options));
 		}
 

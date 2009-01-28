@@ -18,6 +18,7 @@
 
 	require_once("BaseImplementer.class.php");
 	require_once("Tools.module.php");
+	require_once("Inflector.class.php");
 
 	# class to polymorphically implement AdoDBRecord functionality
 	# This makes use of PHP's behaviour to always pass the $this variable
@@ -87,6 +88,7 @@
 		# as an instance or array of instances of $class
 		function &find($arguments) {
 			$conditions = array();
+			# TODO preset from scoped options
 			$where = $order = $limit = $offset = NULL;
 			$options = array();
 
@@ -141,6 +143,7 @@
 			}
 
 			# parse conditions
+			# TODO join with scoped conditions
 			$parsed_conditions = array();
 			$parsed_params = array();
 			AdoDBRecord_Tools::parse_conditions($conditions, $parsed_conditions, $parsed_params);

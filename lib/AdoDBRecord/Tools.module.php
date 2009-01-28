@@ -10,7 +10,8 @@
 	#
 	# This file holds some tools for initialization and configuration
 
-	require_once("../lib/Singleton.class.php");
+	require_once("Singleton.class.php");
+	require_once("Inflector.class.php");
 
 	# Helper function to return a global database connection to AdoDB
 	function &_adodb_conn() {
@@ -96,22 +97,22 @@
 
 		# check if the named property is part of a has_many association
 		function is_has_many_property($name) {
-			return array_key_exists($property, $this->_has_many);
+			return array_key_exists($name, $this->_has_many);
 		}
 
 		# check if the named property is part of a has_one association
 		function is_has_one_property($name) {
-			return array_key_exists($property, $this->_has_one);
+			return array_key_exists($name, $this->_has_one);
 		}
 
 		# check if the named property is part of a has_many association
 		function is_belongs_to_property($name) {
-			return array_key_exists($property, $this->_belongs_to);
+			return array_key_exists($name, $this->_belongs_to);
 		}
 
 		# check if the named property is part of any association
 		function is_association_property($name) {
-			return is_belongs_to_property($name) || is_has_many_property($name) || is_has_one_property($name)
+			return is_belongs_to_property($name) || is_has_many_property($name) || is_has_one_property($name);
 		}
 	}
 ?>
