@@ -12,9 +12,7 @@
 	# works properly.
 
 	require_once("simpletest/autorun.php");
-
-	$PREFIX_ADODB = "adodb/";
-	require_once("../lib/AdoDBRecord.class.php");
+	require_once("../init.php");
 
 	function setup_sqlite_test_db() {
 		global $_adodb_conn;

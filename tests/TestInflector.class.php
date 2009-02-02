@@ -11,7 +11,7 @@
 	# This implements inflector unit tests.
 
 	require_once("simpletest/autorun.php");
-	require_once("../lib/Inflector.class.php");
+	require_once("../init.php");
 
 	class TestInflector extends UnitTestCase {
 	
