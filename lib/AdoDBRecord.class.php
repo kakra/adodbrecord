@@ -70,7 +70,7 @@
 				"primary_key" => "id",
 				"foreign_key" => Inflector::singularize($this->_base_class) . "_id",
 				"dependent" => "nullify",
-				"uniq" => false
+				"uniq" => false,
 				"select" => "*",
 				"validate" => true
 			);
