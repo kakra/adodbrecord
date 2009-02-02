@@ -92,7 +92,7 @@
 
 		# check if the named property is a column property
 		function is_column_property($name) {
-			return in_array($property, $this->_columns);
+			return in_array($name, $this->_columns);
 		}
 
 		# check if the named property is part of a has_many association
@@ -112,7 +112,9 @@
 
 		# check if the named property is part of any association
 		function is_association_property($name) {
-			return is_belongs_to_property($name) || is_has_many_property($name) || is_has_one_property($name);
+			return AdoDBRecord_Tools::is_belongs_to_property($name) ||
+				AdoDBRecord_Tools::is_has_many_property($name) ||
+				AdoDBRecord_Tools::is_has_one_property($name);
 		}
 	}
 ?>

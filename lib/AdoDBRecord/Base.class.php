@@ -211,9 +211,33 @@
 			switch (count($args)) {
 				case 1:
 					# this call was made by __get()
-					# TODO check property is valid (_associations)
 					list($property) = $args;
 					if (AdoDBRecord_Tools::is_column_property($property)) return $this->_attributes[$property];
+
+					# if no column property check for association or proxy
+					$use_proxy = (substr($property, -1) == "_");
+					if ($use_proxy) $property = substr($property, 0, -1);
+					if (AdoDBRecord_Tools::is_association_property($property)) {
+						if (AdoDBRecord_Tools::is_has_many_property($property)) {
+							$returns_many = true;
+							$options = $this->_has_many[$property];
+						}
+						elseif (AdoDBRecord_Tools::is_belongs_to_property($property)) {
+							$returns_many = true;
+							$options = $this->_belongs_to[$property];
+						}
+						elseif (AdoDBRecord_Tools::is_has_one_property($property)) {
+							$returns_many = false;
+							$options = $this->_belongs_to[$property];
+						}
+						else
+							die("Fatal association inconsistency");
+						$proxy = new AdoDBRecord_AssociationProxy($returns_many, $options);
+						if ($use_proxy) return $proxy;
+						die("Unimplemented association access method");
+						# TODO build scope from options
+						return $proxy->find($scope);
+					}
 
 					# TODO write a real error handler
 					die(get_class($this) . "->{$property}: No such property");
