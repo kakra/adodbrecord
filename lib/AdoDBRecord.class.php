@@ -12,7 +12,7 @@
 	# http://phplens.com/adodb/index.html
 	#
 	# Set global $PREFIX_ADODB to make AdoDBRecord find you adodb
-	# installation, e.g. $PREFIX_ADODB = "adodb/" -- beware the final
+	# installation, e.g. $PREFIX_ADODB = "adodb/" -- note the final
 	# slash "/" in the path name. This will look for "adodb/adodb.inc.php"
 	# in your include path.
 
@@ -53,6 +53,7 @@
 		# initializer
 		function AdoDBRecord($attributes = false) {
 			AdoDBRecord_Base::initialize();
+			# TODO setup scoped attributes first
 			if ($attributes && $attributes != ADODBRECORD_STUB) $this->_attributes = $attributes;
 		}
 
@@ -120,7 +121,7 @@
 		function _id() {
 			if ($this->_new_record) return false;
 			# FIXME re-add table and column quotes again later
-			return sprintf("id = %d" ,$this->id);
+			return sprintf("id = %d", $this->id);
 		}
 
 		# returns the last error message of the db connection

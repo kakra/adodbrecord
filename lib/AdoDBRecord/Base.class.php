@@ -19,6 +19,7 @@
 	require_once("BaseImplementer.class.php");
 	require_once("Tools.module.php");
 	require_once("Inflector.class.php");
+	require_once("Singleton.class.php");
 
 	# class to polymorphically implement AdoDBRecord functionality
 	# This makes use of PHP's behaviour to always pass the $this variable
@@ -42,6 +43,7 @@
 				$this->_table_name = Inflector::tableize($this->_base_class);
 			}
 			$this->_type_name = get_class($this);
+			$this->_singular_instance = Singleton::instance();
 			$this->_columns = AdoDBRecord_Tools::get_columns();
 
 			# dynamically overload current class in PHP4 because it doesn't
