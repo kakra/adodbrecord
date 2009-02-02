@@ -45,11 +45,11 @@
       <weburl>http://localhost/</weburl>
     </webInvocation>
     <shell>
-      <phpexe>/usr/bin/php</phpexe>
+      <phpexe>/usr/bin/php-shell</phpexe>
       <phpini/>
     </shell>
     <options>
-      <phpincludepath>/usr/share/php5;/usr/share/php</phpincludepath>
+      <phpincludepath>.;/usr/share/php5;/usr/share/php</phpincludepath>
       <defaultFile/>
       <startupFileMode>1</startupFileMode>
     </options>
@@ -113,6 +113,7 @@
   <kdevfileview>
     <groups>
       <group pattern="*.class.php" name="Klassendateien" />
+      <group pattern="*.module.php" name="Moduldateien" />
       <group pattern="*.php" name="PHP-Scripte" />
       <group pattern="*.txt,README" name="Dokumentation" />
       <hidenonprojectfiles>false</hidenonprojectfiles>

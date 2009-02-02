@@ -223,7 +223,7 @@
 							$options = $this->_has_many[$property];
 						}
 						elseif (AdoDBRecord_Tools::is_belongs_to_property($property)) {
-							$returns_many = true;
+							$returns_many = false;
 							$options = $this->_belongs_to[$property];
 						}
 						elseif (AdoDBRecord_Tools::is_has_one_property($property)) {
