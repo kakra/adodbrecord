@@ -27,12 +27,12 @@
 
 		function stream_open($path, $mode, $options, &$opened_path) {
 			$this->position = 0;
-			$this->stream = '<?php ' . ($this->create_stream(preg_replace("#^.*://#", "", $path, 1)) or die("Stream creation failed for '$path'")) . ' ?>';
+			$this->stream = '<' . '?php ' . ($this->create_stream(preg_replace("#^.*://#", "", $path, 1)) or die("Stream creation failed for '$path'")) . ' ?' . '>';
 			$opened_path = $path;
 			return true;
 		}
 
-		function stream_stat() {
+/*		function stream_stat() {
 			# FIXME this is buggy
 			return array(
 				'dev' => 0, 'ino' => 0, 'uid' => 0, 'gid' => 0,
@@ -44,7 +44,7 @@
 				'mtime' => mktime()
 			);
 		}
-
+*/
 		function stream_read($count) {
 			$this->position += strlen($data = substr($this->stream, $this->position, $count));
 			return $data;
