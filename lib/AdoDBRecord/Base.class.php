@@ -43,7 +43,6 @@
 				$this->_table_name = Inflector::tableize($this->_base_class);
 			}
 			$this->_type_name = get_class($this);
-			$this->_singular_instance = Singleton::instance();
 			$this->_columns = AdoDBRecord_Tools::get_columns();
 
 			# dynamically overload current class in PHP4 because it doesn't
