@@ -27,6 +27,10 @@
 	class AdoDBRecord_Base {
 
 		function AdoDBRecord_Base() {
+			$this->initialize();
+		}
+
+		function initialize() {
 			# setup database configuration
 			if (!$this->_table_name) {
 				if (!$this->_base_class) {

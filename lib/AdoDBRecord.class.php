@@ -52,7 +52,7 @@
 
 		# initializer
 		function AdoDBRecord($attributes = false) {
-			AdoDBRecord_Base::AdoDBRecord_Base();
+			AdoDBRecord_Base::initialize();
 			if ($attributes && $attributes != ADODBRECORD_STUB) $this->_attributes = $attributes;
 		}
 
