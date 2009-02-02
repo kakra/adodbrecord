@@ -32,6 +32,19 @@
 			return true;
 		}
 
+		function stream_stat() {
+			# FIXME this is buggy
+			return array(
+				'dev' => 0, 'ino' => 0, 'uid' => 0, 'gid' => 0,
+				'mode' => 0600, 'nlink' => 1,
+				'rdev' => 0, 'blksize' => 0, 'blocks' => 0,
+				'size' => strlen($this->stream),
+				'atime' => mktime(),
+				'utime' => mktime(),
+				'mtime' => mktime()
+			);
+		}
+
 		function stream_read($count) {
 			$this->position += strlen($data = substr($this->stream, $this->position, $count));
 			return $data;
