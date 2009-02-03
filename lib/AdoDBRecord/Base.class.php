@@ -139,6 +139,7 @@
 				}
 				switch ($key) {
 					case "conditions":
+						# FIXME make this DRY (see also AdoDBRecord_AssociationProxy)
 						if (!is_array($arg)) $arg = array($arg);
 						$conditions = array_merge_recursive($conditions, $arg);
 						break;

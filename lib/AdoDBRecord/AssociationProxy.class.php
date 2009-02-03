@@ -26,15 +26,17 @@
 			$this->_options = $options;
 
 			# build base data from options
+			# TODO select source from polymorphic type
 			$source = $this->_source = Singleton::instance($options["class_name"]);
 			if (!is_subclass_of($this->_source, 'AdoDBRecord')) die ("AdoDBRecord_AssociationProxy: associated class isn't an ancestor of AdoDBRecord");
 
 			# extract find options
 			$find_options = array();
 			if (isset($options["order"])) $find_options["order"] = $options["order"];
-			#if (isset($options["select"])) $find_options["select"] = $options["select"];
+			# TODO if (isset($options["select"])) $find_options["select"] = $options["select"];
 
 			# parse conditions into string + parameters
+			# FIXME make this DRY
 			$parsed_conditions = array();
 			$parsed_params = array();
 			if (isset($options["conditions"])) {
