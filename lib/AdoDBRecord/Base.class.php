@@ -161,7 +161,7 @@
 			AdoDBRecord_Tools::parse_conditions($conditions, $parsed_conditions, $parsed_params);
 
 			# join scoped conditions
-			if (isset($scope["conditions"])) $parsed_conditions[] = $scope["conditions"];
+			if (!empty($scope["conditions"])) $parsed_conditions[] = $scope["conditions"];
 
 			# convert parsed options to sql
 			if ($order !== NULL) $order = " ORDER BY {$order}";
@@ -225,6 +225,7 @@
 					if (AdoDBRecord_Tools::is_column_property($property)) return $this->_attributes[$property];
 
 					# if no column property check for association or proxy
+					# TODO cache proxy
 					$use_proxy = (substr($property, -1) == "_");
 					if ($use_proxy) $property = substr($property, 0, -1);
 					if (AdoDBRecord_Tools::is_association_property($property)) {
@@ -238,7 +239,7 @@
 						}
 						elseif (AdoDBRecord_Tools::is_has_one_property($property)) {
 							$returns_many = false;
-							$options = $this->_belongs_to[$property];
+							$options = $this->_has_one[$property];
 						}
 						else
 							die("AdoDBRecord_Base::parse_member(): fatal association inconsistency");

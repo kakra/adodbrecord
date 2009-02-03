@@ -43,8 +43,15 @@
 				$conditions = array_merge_recursive($conditions, $arg);
 				AdoDBRecord_Tools::parse_conditions($conditions, $parsed_conditions, $parsed_params);
 			}
-			$parsed_conditions[] = sprintf("%s = ?", $options["foreign_key"]);
-			$parsed_params[] = $client->$options["primary_key"];
+
+			if (isset($options["primary_key"])) {
+				$parsed_conditions[] = sprintf("%s = ?", $options["foreign_key"]);
+				$parsed_params[] = $client->$options["primary_key"];
+			}
+			else {
+				$parsed_conditions[] = sprintf("%s = ?", 'id');
+				$parsed_params[] = $client->$options["foreign_key"];
+			}
 
 			$find_conditions = sprintf("(%s)", join($parsed_conditions, ") AND ("));
 			$find_conditions = strtr($find_conditions, array("%" => "%%", "?" => "'%s'")); # FIXME not database agnostic
@@ -59,10 +66,13 @@
 				);
 			}
 			else {
+				$this->_wrap_scope = array(
+					"find" => array_merge($find_options, array("conditions" => $find_conditions))
+				);
 			}
 		}
 
-		function find() {
+		function &find() {
 			# instantiate model singleton for scoping
 			$model = Singleton::instance($this->_source);
 
