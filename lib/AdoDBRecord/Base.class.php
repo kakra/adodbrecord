@@ -113,8 +113,7 @@
 
 			# parse arguments into query parameters
 			foreach ($arguments as $key => $arg) {
-				if (is_numeric($key))
-				{
+				if (is_numeric($key)) {
 					switch ($arg) {
 						case "all":
 							$limit = $offset = NULL;
@@ -232,7 +231,7 @@
 						}
 						else
 							die("Fatal association inconsistency");
-						$proxy = new AdoDBRecord_AssociationProxy($returns_many, $options);
+						$proxy = new AdoDBRecord_AssociationProxy($this, $returns_many, $options);
 						if ($use_proxy) return $proxy;
 						die("Unimplemented association access method");
 						# TODO build scope from options
