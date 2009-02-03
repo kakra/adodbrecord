@@ -20,9 +20,11 @@
 	class Singleton {
 		function &instance($class = false) {
 			if ($class === false) {
-				if (!isset($this)) die("Singleton::instance() called from non-instanciated context.");
-				$class = get_class($this);
+				if (!is_object($this)) die("Singleton::instance() called from non-instanciated context.");
+				$class = $this;
 			}
+			if (is_object($class)) $class = get_class($class);
+
 			$class = ucfirst(strtolower($class));
 			$instance = "__{$class}";
 			global $$instance;

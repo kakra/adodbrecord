@@ -116,5 +116,24 @@
 				AdoDBRecord_Tools::is_has_many_property($name) ||
 				AdoDBRecord_Tools::is_has_one_property($name);
 		}
+
+		function join_scope_stack() {
+			$find_scope = array();
+			$conditions = array();
+			$create_scope = array();
+			foreach($this->_scoped_methods as $scope) {
+				if(isset($scope["find"])) {
+					$conditions[] = $scope["find"]["conditions"];
+					unset($scope["find"]["conditions"]);
+					$find_scope = array_merge($find_scope, $scope["find"]);
+				}
+				if(isset($scope["create"])) $create_scope = array_merge($create_scope, $scope["create"]);
+			}
+			$new_scope = array(
+				"create" => $create_scope,
+				"find" => array_merge($find_scope, array("conditions" => empty($conditions) ? "" : sprintf("(%s)", join($conditions, ") AND ("))))
+			);
+			$this->_scope = $new_scope;
+		}
 	}
 ?>

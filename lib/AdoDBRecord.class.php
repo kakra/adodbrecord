@@ -64,12 +64,12 @@
 
 		# add one or more has_many relations to the object, usually run inside the
 		# setup method
-		function has_many($what, $options) {
+		function has_many($what, $options = array()) {
 			$table = Inflector::tableize($what);
 			$default_options = array(
 				"class_name" => Inflector::classify($table),
 				"primary_key" => "id",
-				"foreign_key" => Inflector::singularize($this->_base_class) . "_id",
+				"foreign_key" => Inflector::underscore($this->_base_class) . "_id",
 				"dependent" => "nullify",
 				"uniq" => false,
 				"select" => "*",
@@ -81,12 +81,12 @@
 
 		# add one or more has_one relations to the object, usually run inside the
 		# setup method
-		function has_one($what, $options) {
+		function has_one($what, $options = array()) {
 			$table = Inflector::tableize($what);
 			$default_options = array(
 				"class_name" => Inflector::classify($table),
 				"primary_key" => "id",
-				"foreign_key" => Inflector::singularize($this->_base_class) . "_id",
+				"foreign_key" => Inflector::underscore($this->_base_class) . "_id",
 				"dependent" => "nullify",
 				"select" => "*",
 				"validate" => true
@@ -97,7 +97,7 @@
 
 		# add one or more belongs_to relations to the object, usually run inside the
 		# setup method
-		function belongs_to($what, $options) {
+		function belongs_to($what, $options = array()) {
 			$table = Inflector::tableize($what);
 			$default_options = array(
 				"class_name" => Inflector::classify($table),
@@ -175,6 +175,27 @@
 			$this->set_attributes($attributes);
 			return $this->save();
 		}
-	}
 
+		# pushes a find scope onto the stack
+		function with_find_scope($scope) {
+			$this->with_scope(array("find" => $scope));
+		}
+
+		# pushes a find scope onto the stack
+		function with_create_scope($scope) {
+			$this->with_scope(array("create" => $scope));
+		}
+
+		# pushes a method scope onto the stack and joins them together
+		function with_scope($method_scope) {
+			array_push($this->_scoped_methods, $method_scope);
+			AdoDBRecord_Tools::join_scope_stack();
+		}
+
+		# pops a method scope from the stack and joins the remaining together
+		function end_scope() {
+			array_pop($this->_scoped_methods);
+			AdoDBRecord_Tools::join_scope_stack();
+		}
+	}
 ?>

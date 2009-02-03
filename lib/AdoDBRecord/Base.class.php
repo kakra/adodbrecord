@@ -20,6 +20,7 @@
 	require_once("Tools.module.php");
 	require_once("Inflector.class.php");
 	require_once("Singleton.class.php");
+	require_once("AssociationProxy.class.php");
 
 	# class to polymorphically implement AdoDBRecord functionality
 	# This makes use of PHP's behaviour to always pass the $this variable
@@ -67,6 +68,7 @@
 
 		# instanciate and save one or many new objects
 		function create($attribute_list) {
+			# TODO respect scoped create options
 			while($attributes = array_shift($attribute_list)) {
 				if (is_array($attributes) && empty($attributes))
 					$attributes = false;
@@ -93,9 +95,16 @@
 		# as an instance or array of instances of $class
 		function &find($arguments) {
 			$conditions = array();
-			# TODO preset from scoped options
+
+			# Instantiate model singleton to access scope
+			$model = Singleton::instance();
+			$scope = $model->_scope["find"];
+
 			$where = $order = $limit = $offset = NULL;
 			$options = array();
+
+			# preset scoped options
+			if (isset($scope["order"])) $order = $scope["order"];
 
 			# flatten all arguments if their key is numeric
 			# this resolves e.g. array(1, 2, array("conditions" => "foo")) into array(1, 2, "conditions" => "foo")
@@ -147,10 +156,12 @@
 			}
 
 			# parse conditions
-			# TODO join with scoped conditions
 			$parsed_conditions = array();
 			$parsed_params = array();
 			AdoDBRecord_Tools::parse_conditions($conditions, $parsed_conditions, $parsed_params);
+
+			# join scoped conditions
+			if (isset($scope["conditions"])) $parsed_conditions[] = $scope["conditions"];
 
 			# convert parsed options to sql
 			if ($order !== NULL) $order = " ORDER BY {$order}";
@@ -230,12 +241,10 @@
 							$options = $this->_belongs_to[$property];
 						}
 						else
-							die("Fatal association inconsistency");
+							die("AdoDBRecord_Base::parse_member(): fatal association inconsistency");
 						$proxy = new AdoDBRecord_AssociationProxy($this, $returns_many, $options);
 						if ($use_proxy) return $proxy;
-						die("Unimplemented association access method");
-						# TODO build scope from options
-						return $proxy->find($scope);
+						return $proxy->find();
 					}
 
 					# TODO write a real error handler
