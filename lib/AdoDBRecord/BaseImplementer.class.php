@@ -42,6 +42,7 @@ EOC;
 		}
 
 		# FIXME only instantiate once
+		# FIXME STI won't work on these methods while we need to maintain PHP4 compatibility
 		function write_polymorphic_method($derived_class, $method) {
 			return <<<EOP
 				function __polymorphic_$method(\$params) { return AdoDBRecord_Base::$method(\$params); }

@@ -48,6 +48,7 @@
 			# class name
 			$sti_test = new STITest();
 			$this->assertEqual($sti_test->_table_name, "tests");
+			$this->assertEqual(strtolower($sti_test->_type_name), "stitest");
 
 			# Ensure CamelCase class names resolve properly to their
 			# "tableized" camel_cases counterpart
