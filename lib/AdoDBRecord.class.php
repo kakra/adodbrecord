@@ -20,10 +20,14 @@
 	require_once("AdoDBRecord/Base.class.php");
 	require_once("Inflector.class.php");
 
-	if (version_compare(PHP_VERSION, '5.0.0') < 0)
+	if (version_compare(PHP_VERSION, '5.0.0') < 0) {
+		define("AR_PHP4_COMPAT", true);
 		require_once("AdoDBRecord/Overloadable.php4.class.php");
-	else
+	}
+	else {
+		define("AR_PHP5_COMPAT", true);
 		require_once("AdoDBRecord/Overloadable.class.php");
+	}
 
 	# FIXME initiate your connection here
 #	$_adodb_conn = ADONewConnection($database[type]);
@@ -188,13 +192,25 @@
 
 		# pushes a method scope onto the stack and joins them together
 		function with_scope($method_scope) {
-			array_push($this->_scoped_methods, $method_scope);
+			if (defined("AR_PHP4_COMPAT")) {
+				# PHP4 cannot pass properties by reference - work around it
+				$temp =& $this->_scoped_methods;
+				array_push($temp, $method_scope);
+			}
+			else
+				array_push($this->_scoped_methods, $method_scope);
 			AdoDBRecord_Tools::join_scope_stack();
 		}
 
 		# pops a method scope from the stack and joins the remaining together
 		function end_scope() {
-			array_pop($this->_scoped_methods);
+			if (defined("AR_PHP4_COMPAT")) {
+				# PHP4 cannot pass properties by reference - work around it
+				$temp =& $this->_scoped_methods;
+				array_pop($temp_methods);
+			}
+			else
+				array_pop($this->_scoped_methods);
 			AdoDBRecord_Tools::join_scope_stack();
 		}
 	}
