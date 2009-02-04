@@ -97,7 +97,7 @@
 			$conditions = array();
 
 			# Instantiate model singleton to access scope
-			$model = Singleton::instance();
+			$model =& Singleton::instance();
 			$scope = $model->_scope["find"];
 
 			$where = $order = $limit = $offset = NULL;

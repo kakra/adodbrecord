@@ -48,20 +48,23 @@
 
 			if (isset($options["primary_key"])) {
 				$parsed_conditions[] = sprintf("%s = ?", $options["foreign_key"]);
-				$parsed_params[] = $client->$options["primary_key"];
+				# FIXME PHP4 does not like $obj->$property indirection, fix this after dropping PHP4 support
+				$parsed_params[] = $client->_attributes[$options["primary_key"]];
 			}
 			else {
 				$parsed_conditions[] = sprintf("%s = ?", 'id');
-				$parsed_params[] = $client->$options["foreign_key"];
+				# FIXME PHP4 does not like $obj->$property indirection, fix this after dropping PHP4 support
+				$parsed_params[] = $client->_attributes[$options["foreign_key"]];
 			}
 
 			$find_conditions = sprintf("(%s)", join($parsed_conditions, ") AND ("));
 			$find_conditions = strtr($find_conditions, array("%" => "%%", "?" => "'%s'")); # FIXME not database agnostic
 			$find_conditions = vsprintf($find_conditions, $parsed_params);
 
+			$find_options = array_merge($find_options, array("conditions" => $find_conditions));
 			if (isset($options["primary_key"])) {
 				$this->_wrap_scope = array(
-					"find" => array_merge($find_options, array("conditions" => $find_conditions)),
+					"find" => $find_options,
 					"create" => array(
 						$options["foreign_key"] => $client->$options["primary_key"]
 					)
@@ -69,14 +72,14 @@
 			}
 			else {
 				$this->_wrap_scope = array(
-					"find" => array_merge($find_options, array("conditions" => $find_conditions))
+					"find" => $find_options
 				);
 			}
 		}
 
 		function &find() {
 			# instantiate model singleton for scoping
-			$model = Singleton::instance($this->_source);
+			$model =& Singleton::instance($this->_source);
 
 			# wrap finder into model scope
 			$options = func_get_args();

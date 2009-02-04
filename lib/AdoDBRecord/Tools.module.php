@@ -121,7 +121,8 @@
 			$find_scope = array();
 			$conditions = array();
 			$create_scope = array();
-			foreach($this->_scoped_methods as $scope) {
+			$scoped_methods = $this->_scoped_methods;
+			foreach($scoped_methods as $scope) {
 				if(isset($scope["find"])) {
 					$conditions[] = $scope["find"]["conditions"];
 					unset($scope["find"]["conditions"]);
