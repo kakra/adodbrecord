@@ -193,9 +193,10 @@
 		# pushes a method scope onto the stack and joins them together
 		function with_scope($method_scope) {
 			if (defined("AR_PHP4_COMPAT")) {
-				# PHP4 cannot pass properties by reference - work around it
-				$temp =& $this->_scoped_methods;
+				# PHP4 cannot pass properties of overloaded objects by reference - work around it
+				$temp = $this->_scoped_methods;
 				array_push($temp, $method_scope);
+				$this->_scoped_methods = $temp;
 			}
 			else
 				array_push($this->_scoped_methods, $method_scope);
@@ -205,9 +206,10 @@
 		# pops a method scope from the stack and joins the remaining together
 		function end_scope() {
 			if (defined("AR_PHP4_COMPAT")) {
-				# PHP4 cannot pass properties by reference - work around it
-				$temp =& $this->_scoped_methods;
-				array_pop($temp_methods);
+				# PHP4 cannot pass properties of overloaded objects by reference - work around it
+				$temp = $this->_scoped_methods;
+				array_pop($temp);
+				$this->_scoped_methods = $temp;
 			}
 			else
 				array_pop($this->_scoped_methods);
