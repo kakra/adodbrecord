@@ -48,15 +48,15 @@
 
 			$stest = new SuperTest(array("dummy" => "SuperDummy"));
 			$stest->save();
-			$this->assertEqual($stest->type, "SuperTest");
+			$this->assertEqual(strtolower($stest->type), "supertest");
 
 			$utest = new UltraTest(array("dummy" => "UltraDummy"));
 			$utest->save();
-			$this->assertEqual($utest->type, "UltraTest");
+			$this->assertEqual(strtolower($utest->type), "ultratest");
 
 			$atest = new AutoTest(array("dummy" => "AutoDummy"));
 			$atest->save();
-			$this->assertEqual($atest->type, "AutoTest");
+			$this->assertEqual(strtolower($atest->type), "autotest");
 
 			# PHP 5.3 needed to call magic methods statically, so
 			# work around by instanciating the class as singleton
@@ -68,15 +68,15 @@
 			$this->assertEqual(strtolower(get_class($dummy2)), "test");
 
 			$stest2 = $Test->find_by_dummy("SuperDummy");
-			$this->assertEqual($stest2->type, "SuperTest");
+			$this->assertEqual(strtolower($stest2->type), "supertest");
 			$this->assertEqual(strtolower(get_class($stest2)), "supertest");
 
 			$utest2 = $Test->find_by_dummy("UltraDummy");
-			$this->assertEqual($utest2->type, "UltraTest");
+			$this->assertEqual(strtolower($utest2->type), "ultratest");
 			$this->assertEqual(strtolower(get_class($utest2)), "ultratest");
 
 			$atest2 = $Test->find_by_dummy("AutoDummy");
-			$this->assertEqual($atest2->type, "AutoTest");
+			$this->assertEqual(strtolower($atest2->type), "autotest");
 			$this->assertEqual(strtolower(get_class($atest2)), "autotest");
 		}
 	}

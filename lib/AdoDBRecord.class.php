@@ -141,7 +141,8 @@
 		function save() {
 			$conn =& _adodb_conn();
 			$this->set_attributes(array(
-				"type" => ($this->_type_name == $this->_base_class) ? NULL : $this->_type_name,
+				# FIXME strtolower() needed for PHP4 compatibility, remove it later
+				"type" => (strtolower($this->_type_name) == strtolower($this->_base_class)) ? NULL : $this->_type_name,
 				"updated_at" => mktime()
 			));
 

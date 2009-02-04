@@ -121,6 +121,8 @@
 			$find_scope = array();
 			$conditions = array();
 			$create_scope = array();
+			# FIXME PHP4 does not like passing properties by reference (_scoped_methods) of overloaded objects,
+			# fix this after dropping PHP4 support
 			$scoped_methods = $this->_scoped_methods;
 			foreach($scoped_methods as $scope) {
 				if(isset($scope["find"])) {
