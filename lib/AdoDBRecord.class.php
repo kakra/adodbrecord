@@ -46,6 +46,7 @@
 		var $_belongs_to = array(); # holds the belongs-to associations (n:1)
 		var $_new_record = true; # if this is a new record
 		var $_table_name = false; # set this to override default
+		var $_primary_key = "id"; # default key name is "id"
 
 		var $_scoped_methods = array();
 		var $_scope = array("find" => null, "create" => null);
@@ -66,13 +67,25 @@
 		function setup() {
 		}
 
+		# can be used in setup() to customize the primary key
+		function set_primary_key($name) {
+			$this->_primary_key = $name;
+		}
+
+		# can be used in setup() to customize the table name
+		function set_table_name($name) {
+			$this->_table_name = $name;
+		}
+
 		# add one or more has_many relations to the object, usually run inside the
 		# setup method
 		function has_many($what, $options = array()) {
 			$table = Inflector::tableize($what);
+			$assoc_class = Inflector::classify($table);
+			$assoc_model = Singleton::instance($assoc_class);
 			$default_options = array(
-				"class_name" => Inflector::classify($table),
-				"primary_key" => "id",
+				"class_name" => $assoc_class,
+				"primary_key" => $assoc_model->_primary_key,
 				"foreign_key" => Inflector::underscore($this->_base_class) . "_id",
 				"dependent" => "nullify",
 				"uniq" => false,
@@ -87,9 +100,11 @@
 		# setup method
 		function has_one($what, $options = array()) {
 			$table = Inflector::tableize($what);
+			$assoc_class = Inflector::classify($table);
+			$assoc_model = Singleton::instance($assoc_class);
 			$default_options = array(
-				"class_name" => Inflector::classify($table),
-				"primary_key" => "id",
+				"class_name" => $assoc_class,
+				"primary_key" => $assoc_model->_primary_key,
 				"foreign_key" => Inflector::underscore($this->_base_class) . "_id",
 				"dependent" => "nullify",
 				"select" => "*",
@@ -125,7 +140,7 @@
 		function _id() {
 			if ($this->_new_record) return false;
 			# FIXME re-add table and column quotes again later
-			return sprintf("id = %d", $this->id);
+			return sprintf("%s = %d", $this->_primary_key, $this->id);
 		}
 
 		# returns the last error message of the db connection

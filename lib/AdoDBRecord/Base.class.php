@@ -134,7 +134,7 @@
 							$options[] = $arg;
 							continue 2;
 						default:
-							$key = "id";
+							$key = $this->_primary_key;
 					}
 				}
 				switch ($key) {
@@ -198,22 +198,6 @@
 			return AdoDBRecord_Base::find($arguments);
 		}
 
-		# sets or reads an attribute depending on parameter count
-		# 1 parameter  => return named attribute
-		# 2 parameters => set and return named attribute
-		# 3 or more    => set and return named attribute as array
-		function attribute($params) {
-			$name = array_shift($params);
-			switch (count($params)) {
-				case 0:
-					return @$this->_attributes[$name];
-				case 1:
-					$params = array_shift($params);
-				default:
-					return $this->set_attributes(array($name => $params));
-			}
-		}
-
 		# parses the member access initiated by __set() or __get()
 		# and checks if it is available as column or association (TODO)
 		# and results in an error otherwise
@@ -224,6 +208,7 @@
 					# this call was made by __get()
 					list($property) = $args;
 					if (AdoDBRecord_Tools::is_column_property($property)) return $this->_attributes[$property];
+					if ($property == "id") return $this->_attributes[$this->_primary_key];
 
 					# if no column property check for association or proxy
 					# TODO cache proxy
@@ -257,6 +242,7 @@
 					# TODO check property is valid (_associations)
 					list($property, $value) = $args;
 					if (AdoDBRecord_Tools::is_column_property($property)) return $this->set_attributes(array($property => $value));
+					if ($property == "id") return $this->set_attributes(array($this->_primary_key => $value));
 
 					# TODO write a real error handler
 					die(get_class($this) . "->{$property}: No such property");
