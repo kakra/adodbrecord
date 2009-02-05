@@ -117,6 +117,13 @@
 				AdoDBRecord_Tools::is_has_one_property($name);
 		}
 
+		# extracts a single column from a 2-dim array
+		function array_extract_key($array, $key) {
+			foreach($array as $k => $v) $array[$k] = $v[$key];
+			return $array;
+		}
+
+		# join the scope stack into a single condition of type string
 		function join_scope_stack() {
 			$find_scope = array();
 			$conditions = array();

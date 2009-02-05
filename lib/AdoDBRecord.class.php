@@ -89,7 +89,6 @@
 				"foreign_key" => Inflector::underscore($this->_base_class) . "_id",
 				"dependent" => "nullify",
 				"uniq" => false,
-				"select" => "*",
 				"validate" => true
 			);
 			$options = array_merge($default_options, $options);
@@ -107,7 +106,6 @@
 				"primary_key" => $assoc_model->_primary_key,
 				"foreign_key" => Inflector::underscore($this->_base_class) . "_id",
 				"dependent" => "nullify",
-				"select" => "*",
 				"validate" => true
 			);
 			$options = array_merge($default_options, $options);
@@ -122,7 +120,6 @@
 				"class_name" => Inflector::classify($table),
 				"foreign_key" => Inflector::singularize($table) . "_id",
 				"polymorphic" => false,
-				"select" => "*",
 				"validate" => false
 			);
 			$options = array_merge($default_options, $options);

@@ -33,7 +33,7 @@
 			setup_sqlite_test_db();
 
 			# PHP 5.3 needed to call magic methods statically, so
-			# work around by instanciating the class as singleton
+			# work around by instantiating the class as singleton
 			$Test = Singleton::instance("Test");
 
 			# create two test entries to be found

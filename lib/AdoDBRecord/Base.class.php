@@ -66,7 +66,7 @@
 			   	or die("Cannot register extension hook.");
 		}
 
-		# instanciate and save one or many new objects
+		# instantiate and save one or many new objects
 		function create($attribute_list) {
 			# TODO respect scoped create options
 			while($attributes = array_shift($attribute_list)) {
@@ -100,7 +100,7 @@
 			$model =& Singleton::instance();
 			$scope = $model->_scope["find"];
 
-			$where = $order = $limit = $offset = NULL;
+			$where = $order = $limit = $offset = $select = NULL;
 			$options = array();
 
 			# preset scoped options
@@ -146,6 +146,7 @@
 					case "limit":
 					case "offset":
 					case "order":
+					case "select":
 						$$key = $arg;
 						break;
 					default:
@@ -176,16 +177,21 @@
 			# FIXME re-add table and column quotes again later
 			if ($limit === NULL) $limit = -1;
 			if ($offset === NULL) $offset = -1;
-			if ($rs =& $conn->SelectLimit("SELECT * FROM {$this->_table_name}{$where}{$order}", $limit, $offset, $parsed_params)) {
+			if ($rs =& $conn->SelectLimit("SELECT " . ($select === NULL ? "*" : $select) . " FROM {$this->_table_name}{$where}{$order}", $limit, $offset, $parsed_params)) {
 				$rows =& $rs->GetRows();
-				foreach ($rows as $row) {
-					$class = (empty($row["type"]) ? get_class($this) : $row["type"]);
-					$obj = new $class($row);
-					$obj->_new_record = false;
-					$objs[] = $obj;
+				if ($select === NULL) {
+					foreach ($rows as $row) {
+						$class = (empty($row["type"]) ? get_class($this) : $row["type"]);
+						$obj = new $class($row);
+						$obj->_new_record = false;
+						$objs[] = $obj;
+					}
 				}
+				else
+					$objs = $rows;
 				if (in_array("all", $options)) return $objs;
 				if (in_array("first", $options)) return $objs[0];
+				# FIXME return array if pk was given as array, otherwise return the single result
 				if (count($objs) == 1) return $objs[0];
 				return $objs;
 			}
@@ -211,9 +217,21 @@
 					if ($property == "id") return $this->_attributes[$this->_primary_key];
 
 					# if no column property check for association or proxy
-					# TODO cache proxy
 					$use_proxy = (substr($property, -1) == "_");
-					if ($use_proxy) $property = substr($property, 0, -1);
+					if ($use_proxy) {
+					 	$property = substr($property, 0, -1);
+						$get_ids = false;
+					}
+					 else {
+						# check if only ids were requested
+						# FIXME only allow ids with $return_many==true, which is apparently set below -- needs reconstruction
+						if ($get_ids = (substr($property, -4) == "_ids"))
+							$property = substr($property, 0, -4);
+						elseif ($get_ids = (substr($property, -3) == "_id"))
+							$property = substr($property, 0, -3);
+					}
+
+					# TODO cache proxy
 					if (AdoDBRecord_Tools::is_association_property($property)) {
 						if (AdoDBRecord_Tools::is_has_many_property($property)) {
 							$returns_many = true;
@@ -231,6 +249,8 @@
 							die("AdoDBRecord_Base::parse_member(): fatal association inconsistency");
 						$proxy = new AdoDBRecord_AssociationProxy($this, $returns_many, $options);
 						if ($use_proxy) return $proxy;
+
+						if ($get_ids) return $proxy->find_ids();
 						return $proxy->find();
 					}
 

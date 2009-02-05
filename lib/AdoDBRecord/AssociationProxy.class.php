@@ -66,7 +66,8 @@
 				$this->_wrap_scope = array(
 					"find" => $find_options,
 					"create" => array(
-						$options["foreign_key"] => $client->$options["primary_key"]
+						# FIXME PHP4 does not like $obj->$property indirection, fix this after dropping PHP4 support
+						$options["foreign_key"] => $client->_attributes[$options["primary_key"]]
 					)
 				);
 			}
@@ -77,6 +78,21 @@
 			}
 		}
 
+		function &find_ids() {
+			# instantiate model singleton for scoping
+			$model =& Singleton::instance($this->_source);
+
+			# get options and merge ids selector
+			$options = func_get_args();
+			$options = array_merge($options, array("select" => $model->_primary_key));
+			if ($this->_returns_many)
+				return AdoDBRecord_Tools::array_extract_key($this->find($options), $model->_primary_key);
+			else {
+				$result = $this->find($options);
+				return $result[$model->_primary_key];
+			}
+		}
+
 		function &find() {
 			# instantiate model singleton for scoping
 			$model =& Singleton::instance($this->_source);
@@ -84,6 +100,7 @@
 			# wrap finder into model scope
 			$options = func_get_args();
 			$model->with_find_scope($this->_wrap_scope["find"]);
+			if (!$this->_returns_many) $options = array_merge($options, array("limit" => 1));
 			$result = $this->_source->find($options);
 			$model->end_scope();
 			return $result;
