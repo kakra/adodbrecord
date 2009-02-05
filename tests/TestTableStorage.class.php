@@ -41,11 +41,11 @@
 			$this->assertTrue($dummy->id > 0);
 
 			# Return the complete table and check there is exactly one row
-			$all_rows = Test::find("all");
+			$all_rows = Test::find(ALL);
 			$this->assertEqual(count($all_rows), 1);
 
 			# Return the first row and check it matches our dummy test entry
-			$first = Test::find("first");
+			$first = Test::find(FIRST);
 			$this->assertEqual($first->dummy, "Test123");
 			$this->assertTrue($first->id > 0);
 		}
@@ -69,11 +69,11 @@
 			$this->assertEqual(count($dummys), 2);
 
 			# Return the complete table and check there is exactly one row
-			$all_rows = Test::find("all");
+			$all_rows = Test::find(ALL);
 			$this->assertEqual(count($all_rows), 3);
 
 			# Return the first row and check it still matches our first dummy test entry
-			$first = Test::find("first");
+			$first = Test::find(FIRST);
 			$this->assertEqual($first->dummy, "Test456");
 			$this->assertTrue($first->id > 0);
 		}

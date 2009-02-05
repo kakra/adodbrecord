@@ -37,7 +37,9 @@
 	AdoDBRecord_Tools::version_check();
 	AdoDBRecord_Tools::init();
 
-	define("ADODBRECORD_STUB", "ADODBRECORD_STUB");
+	define("ADODBRECORD_STUB", sha1("ADODBRECORD_STUB"));
+	define("ALL", sha1("ADODBRECORD_ALL"));
+	define("FIRST", sha1("ADODBRECORD_FIRST"));
 
 	class AdoDBRecord extends AdoDBRecord_Overloadable {
 		var $_attributes = array(); # holds the attributes
