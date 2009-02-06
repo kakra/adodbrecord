@@ -62,6 +62,8 @@
 
 		# register the hook which defines a derived class
 		function register_hooks() {
+			# BUG later access to the handler may get blocked by suhosin,
+			# detect it or warn about it
 			stream_wrapper_register("AdoDBRecord", "AdoDBRecord_BaseImplementer")
 			   	or die("Cannot register extension hook.");
 		}
@@ -124,11 +126,11 @@
 			foreach ($arguments as $key => $arg) {
 				if (is_numeric($key)) {
 					switch ($arg) {
-						case "all":
+						case ALL:
 							$limit = $offset = NULL;
 							$options[] = $arg;
 							continue 2;
-						case "first":
+						case FIRST:
 							$limit = 1;
 							$offset = NULL;
 							$options[] = $arg;
@@ -189,8 +191,8 @@
 				}
 				else
 					$objs = $rows;
-				if (in_array("all", $options)) return $objs;
-				if (in_array("first", $options)) return $objs[0];
+				if (in_array(ALL, $options)) return $objs;
+				if (in_array(FIRST, $options)) return $objs[0];
 				# FIXME return array if pk was given as array, otherwise return the single result
 				if (count($objs) == 1) return $objs[0];
 				return $objs;
@@ -201,7 +203,7 @@
 
 		# returns an array of instances
 		function &find_all($arguments) {
-			array_unshift($arguments, "all");
+			array_unshift($arguments, ALL);
 			return AdoDBRecord_Base::find($arguments);
 		}
 

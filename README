@@ -9,6 +9,9 @@ http://www.gnu.org/licenses/gpl-2.0.html
 Homepage:
 http://github.com/kakra/adodbrecord/
 
+Bugtracker:
+http://hurikhan77.lighthouseapp.com/projects/24860-adodbrecord/overview
+
 You need the following software to run AdoDBRecord:
 http://phplens.com/adodb/ (essential)
 http://simpletest.org/ (unit testing)

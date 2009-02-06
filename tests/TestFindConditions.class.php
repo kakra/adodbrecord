@@ -86,7 +86,7 @@
 			$this->assertTrue(is_array($result));
 			$this->assertEqual(count($result), 1);
 
-			$result = Test::find("all", array("conditions" => array("id = ?", 2)));
+			$result = Test::find(ALL, array("conditions" => array("id = ?", 2)));
 			$this->assertTrue(is_array($result));
 			$this->assertEqual(count($result), 1);
 		}
