@@ -189,7 +189,8 @@
 				if (count($objs) == 1) return $objs[0];
 				return $objs;
 			}
-			return NULL;
+			$objs = NULL;
+			return $objs;
 		}
 
 		# returns an array of instances

@@ -3,7 +3,7 @@
 	#
 	# Author: Kai Krakow <kai@kaishome.de>
 	# http://github.com/kakra/adodbrecord/
-	# Version 0.5
+	# Version 0.5.1
 	#
 	# Disclaimer: By using this software you agree to the terms of GPLv2:
 	# http://www.gnu.org/licenses/gpl-2.0.html
