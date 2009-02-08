@@ -17,10 +17,7 @@
 	# in your include path.
 
 	# check compatibility level and store it as a define so it's globally available
-	if (version_compare(PHP_VERSION, '5.0.0') < 0)
-		define("AR_PHP4_COMPAT", true);
-	else
-		define("AR_PHP5_COMPAT", true);
+	define(version_compare(PHP_VERSION, '5.0.0') < 0 ? "AR_PHP4_COMPAT" : "AR_PHP5_COMPAT", true);
 
 	require_once("AdoDBRecord/Tools.module.php");
 	require_once("AdoDBRecord/Base.class.php");

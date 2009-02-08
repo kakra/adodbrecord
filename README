@@ -37,6 +37,10 @@ This project grew out of the need to ease up database development in an
 already existing legacy application. It’s not meant as an exact
 ActiveRecord replacement in PHP – just similar in convenience.
 
+As this is currently lacking good examples please have a look at the
+tests directory for a pretty good insight on what can be done and the
+caveats. The tests are always up-to-date and work.
+
 
 Installation
 ============
