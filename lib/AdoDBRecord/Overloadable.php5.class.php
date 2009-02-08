@@ -13,7 +13,7 @@
 	#
 	# This is the PHP5 version which does some convenient tricks:
 	#   * Trigger an error if something really wasn't found
-	#	* Define magic methods using the PHP5 interface and map them to more generic versions
+	#   * Define magic methods using the PHP5 interface and map them to more generic versions
 
 	require_once("Base.class.php");
 	require_once("Overloadable/Parsers.php");
