@@ -11,33 +11,31 @@
 	# This class is used to "magically" access undefined methods and properties
 	# which map to finders, attributes, associations, etc.
 	#
-	# This is the PHP4 version which needs some dirty tricks to get it working:
-	#   * Mark the class overloaded (not so dirty but pretty unknown)
-	#   * Suppress the "unknown <foobar>" warning
+	# This is the PHP5 version which does some convenient tricks:
 	#   * Trigger an error if something really wasn't found
-	#   * Define magic methods using the PHP4 interface and map them to more generic versions
-
-	if (!function_exists("overload"))
-		die("Missing 'overload' PHP extension. Please enable it.");
+	#	* Define magic methods using the PHP5 interface and map them to more generic versions
 
 	require_once("Base.class.php");
 	require_once("Overloadable/Parsers.php");
 
 	class AdoDBRecord_Overloadable extends AdoDBRecord_Overloadable_Parsers {
 
-		function __call($method, $args, &$return) {
-			$return = AdoDBRecord_Base::parse_method($method, $args);
-			return true;
+		private function __call($method, $args) {
+			return AdoDBRecord_Base::parse_method($method, $args);
 		}
 
-		function __get($property, &$return) {
-			$return = AdoDBRecord_Base::parse_member($property);
-			return true;
+		private function __callStatic($method, $args) {
+			# allows to call magic methods statically in PHP >=5.3
+			# use singleton instances until then
+			return AdoDBRecord_Base::parse_method($method, $args);
 		}
 
-		function __set($property, $value) {
+		private function __get($property) {
+			return AdoDBRecord_Base::parse_member($property);
+		}
+
+		private function __set($property, $value) {
 			AdoDBRecord_Base::parse_member($property, $value);
-			return true;
 		}
 	}
 ?>
