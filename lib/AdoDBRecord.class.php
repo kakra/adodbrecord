@@ -24,17 +24,12 @@
 	require_once("AdoDBRecord/Overloadable.class.php");
 	require_once("Inflector.class.php");
 
-	# FIXME initiate your connection here
-#	$_adodb_conn = ADONewConnection($database[type]);
-#	$_adodb_conn->Connect($database[host],$database[user],$database[password],$database[db_name]);
-#	$_adodb_conn->debug = true;
-
-	AdoDBRecord_Tools::version_check();
-	AdoDBRecord_Tools::init();
-
 	define("ADODBRECORD_STUB", sha1("ADODBRECORD_STUB"));
 	define("ALL", sha1("ADODBRECORD_ALL"));
 	define("FIRST", sha1("ADODBRECORD_FIRST"));
+
+	AdoDBRecord_Tools::version_check();
+	AdoDBRecord_Tools::init();
 
 	class AdoDBRecord extends AdoDBRecord_Overloadable {
 		var $_attributes = array(); # holds the attributes
