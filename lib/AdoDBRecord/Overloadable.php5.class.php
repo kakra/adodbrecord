@@ -20,21 +20,21 @@
 
 	class AdoDBRecord_Overloadable extends AdoDBRecord_Overloadable_Parsers {
 
-		private function __call($method, $args) {
+		public function __call($method, $args) {
 			return AdoDBRecord_Base::parse_method($method, $args);
 		}
 
-		private function __callStatic($method, $args) {
+		public static function __callStatic($method, $args) {
 			# allows to call magic methods statically in PHP >=5.3
 			# use singleton instances until then
 			return AdoDBRecord_Base::parse_method($method, $args);
 		}
 
-		private function __get($property) {
+		public function &__get($property) {
 			return AdoDBRecord_Base::parse_member($property);
 		}
 
-		private function __set($property, $value) {
+		public function __set($property, $value) {
 			AdoDBRecord_Base::parse_member($property, $value);
 		}
 	}
