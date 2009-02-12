@@ -14,7 +14,12 @@
 	# This simple stub only decides if the PHP4 or PHP5 compatible version needs
 	# to be loaded.
 
-	require_once("AdoDBRecord.class.php"); # make sure the defines are there
+	# make sure the defines are there
+	require_once("AdoDBRecord.class.php");
+
+	# load common classes
+	require_once("Base.class.php");
+	require_once("Overloadable/Parsers.class.php");
 
 	if (defined("AR_PHP4_COMPAT"))
 		require_once("AdoDBRecord/Overloadable.php4.class.php");

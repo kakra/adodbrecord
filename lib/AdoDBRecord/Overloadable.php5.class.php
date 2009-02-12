@@ -15,9 +15,6 @@
 	#   * Trigger an error if something really wasn't found
 	#   * Define magic methods using the PHP5 interface and map them to more generic versions
 
-	require_once("Base.class.php");
-	require_once("Overloadable/Parsers.php");
-
 	class AdoDBRecord_Overloadable extends AdoDBRecord_Overloadable_Parsers {
 
 		public function __call($method, $args) {
