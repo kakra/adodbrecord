@@ -96,6 +96,9 @@
 		function &find($arguments) {
 			$conditions = array();
 
+			# Be sure to have arguments in an array as needed below
+			if (!is_array($arguments)) $arguments = array($arguments);
+
 			# Instantiate model singleton to access scope
 			$model =& Singleton::instance();
 			$scope = $model->_scope["find"];
