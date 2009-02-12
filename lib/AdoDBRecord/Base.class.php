@@ -83,7 +83,6 @@
 		}
 
 		# destroy one or more id's by finding each id and running destroy() on it
-		# if called on an instance it runs delete() on it
 		function destroy($id) {
 			if (is_array($id)) {
 				foreach ($id as $one_id) AdoDBRecord_Base::destroy($one_id);
@@ -97,6 +96,9 @@
 		# as an instance or array of instances of $class
 		function &find($arguments) {
 			$conditions = array();
+
+			# Be sure to have arguments in an array as needed below
+			if (!is_array($arguments)) $arguments = array($arguments);
 
 			# Instantiate model singleton to access scope
 			$model =& Singleton::instance();
