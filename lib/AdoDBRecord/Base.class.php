@@ -88,7 +88,7 @@
 				return;
 			}
 			$obj = AdoDBRecord_Base::find($id);
-			$obj->delete();
+			if (is_object($obj)) $obj->delete();
 		}
 
 		# returns the records found by $arguments
